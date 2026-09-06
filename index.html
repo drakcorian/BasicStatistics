@@ -35,6 +35,9 @@ body{background:#0D9488;min-height:100vh;display:flex;flex-direction:column}
 #fig table.stem td.sm{text-align:center;font-weight:700;background:#f0f0f0;width:36px;color:#0F766E}
 #fig table.stem td.sr{text-align:left;letter-spacing:.18em}
 #fig .stem-key{font-family:-apple-system,system-ui,sans-serif;font-size:11px;color:#999;padding-top:6px;text-align:center}
+#partq{display:none;align-items:flex-start;gap:9px;padding:13px 16px 14px;border-top:1px solid #f0f0f0;background:#fcfdfd}
+#partlabel{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#0D9488;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+#parttext{font-size:15px;font-weight:700;color:#111;line-height:1.35}
 #grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#d0d0d0;border-top:2px solid #d0d0d0}
 .opt{background:#f0f0f0;padding:18px 12px;display:flex;align-items:flex-start;gap:8px;min-height:90px;cursor:pointer}
 .opt:active{background:#e0e0e0}
@@ -51,6 +54,18 @@ body{background:#0D9488;min-height:100vh;display:flex;flex-direction:column}
 #fanswer.ok{border-color:#28a745;background:#d4edda;color:#155724}
 #fanswer.bad{border-color:#dc3545;background:#f8d7da;color:#721c24}
 #fcheck{background:#0D9488;color:#fff;border:none;border-radius:10px;padding:13px;font-size:16px;font-weight:700;width:100%;-webkit-appearance:none;cursor:pointer}
+#tinput{padding:14px 12px 18px;display:none;flex-direction:column;gap:11px;border-top:2px solid #eee}
+#tin-hint{font-size:12px;color:#888;text-align:center}
+#ttable{width:100%;border-collapse:separate;border-spacing:0 5px}
+#ttable th{font-size:11px;font-weight:700;color:#0F766E;text-transform:uppercase;letter-spacing:.03em;padding:0 4px 2px;text-align:center}
+#ttable td{padding:0 3px}
+#ttable td.tlab,#ttable th.tlab{font-size:12px;color:#555;text-align:left;font-weight:600;text-transform:none;letter-spacing:0;width:42%;padding-right:8px}
+.tcell{width:100%;font-size:15px;padding:9px 6px;border:2px solid #ddd;border-radius:8px;text-align:center;background:#fff;color:#222;outline:none;-webkit-appearance:none;font-family:inherit}
+.tcell:focus{border-color:#0D9488}
+.tcell.ok{border-color:#28a745;background:#d4edda;color:#155724;font-weight:700}
+.tcell.bad{border-color:#dc3545;background:#f8d7da;color:#721c24;font-size:13px}
+#tcheck{background:#0D9488;color:#fff;border:none;border-radius:10px;padding:13px;font-size:16px;font-weight:700;width:100%;-webkit-appearance:none;cursor:pointer}
+#tcheck:disabled{opacity:.5}
 #frow{padding:10px 14px;display:flex;align-items:flex-start;justify-content:space-between;min-height:48px;border-top:1px solid #eee;gap:8px}
 #fb-wrap{flex:1;display:flex;flex-direction:column;gap:4px}
 #fb{font-size:13px;font-weight:600}
@@ -84,6 +99,7 @@ body{background:#0D9488;min-height:100vh;display:flex;flex-direction:column}
 .lv-tag{display:inline-block;background:#0D9488;color:#fff;font-size:13px;font-weight:700;padding:4px 16px;border-radius:20px;margin-bottom:12px}
 .unlock-msg{font-size:13px;color:#28a745;font-weight:600;margin-bottom:16px;padding:10px 14px;background:#d4edda;border-radius:10px;width:100%}
 #teacher-view{display:none;flex:1;flex-direction:column;background:#f7f7f7}
+#tv-head{position:sticky;top:0;z-index:6;background:#fff}
 #tv-toolbar{background:#fff;border-bottom:1px solid #eee;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0}
 #tv-toolbar h2{font-size:16px;font-weight:700;color:#222}
 #tv-toolbar-right{display:flex;gap:8px}
@@ -91,6 +107,15 @@ body{background:#0D9488;min-height:100vh;display:flex;flex-direction:column}
 .tv-btn.teal{background:#0D9488;color:#fff}
 .tv-btn.green{background:#28a745;color:#fff}
 .tv-btn.gray{background:#eee;color:#555}
+#tv-filter{background:#fff;border-bottom:1px solid #eee;padding:9px 14px 10px;flex-shrink:0;display:flex;flex-direction:column;gap:7px}
+.tvf-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+#tvf-jump{width:64px;flex-shrink:0;padding:8px 9px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;text-align:center;outline:none;-webkit-appearance:none;font-family:inherit}
+#tvf-search{flex:1;min-width:130px;padding:8px 11px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13px;outline:none;-webkit-appearance:none;font-family:inherit}
+#tvf-jump:focus,#tvf-search:focus{border-color:#0D9488}
+.tvf-pill{border:1.5px solid #e0e0e0;border-radius:20px;padding:4px 11px;font-size:12px;font-weight:600;color:#888;cursor:pointer;background:#fff}
+.tvf-pill.active{border-color:#0D9488;background:#E0F2F1;color:#00695C}
+#tvf-count{font-size:11px;color:#aaa}
+.qcard.flash{box-shadow:0 0 0 3px #0D9488;transition:box-shadow .2s}
 #tv-scroll{flex:1;overflow-y:auto;padding:12px 14px}
 .qcard{background:#fff;border-radius:12px;margin-bottom:12px;overflow:hidden;border:1px solid #e8e8e8}
 .qcard-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f9f9f9;border-bottom:1px solid #eee;cursor:pointer;gap:8px}
@@ -163,6 +188,8 @@ textarea.plotjson{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12
 
 <div id="fig"></div>
 
+<div id="partq"><span id="partlabel">a</span><span id="parttext"></span></div>
+
 <div id="grid">
 <div class="opt" id="o0"><div class="num">1</div><div class="txt"></div></div>
 <div class="opt" id="o1"><div class="num">2</div><div class="txt"></div></div>
@@ -174,6 +201,12 @@ textarea.plotjson{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12
 <div id="finput-hint">Type the number only — decimals are fine (e.g. 6.5)</div>
 <input id="fanswer" type="text" inputmode="decimal" placeholder="Your answer…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
 <button id="fcheck">Check ✓</button>
+</div>
+
+<div id="tinput">
+<div id="tin-hint">Read each value off the plot and fill in the table</div>
+<table id="ttable"></table>
+<button id="tcheck">Check ✓</button>
 </div>
 
 <div id="frow">
@@ -231,11 +264,22 @@ textarea.plotjson{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12
 </div>
 
 <div id="teacher-view">
+<div id="tv-head">
 <div id="tv-toolbar">
 <h2>✏ Question Editor</h2>
 <div id="tv-toolbar-right">
 <button class="tv-btn gray" id="tv-cancel">Cancel</button>
 <button class="tv-btn green" id="tv-save">Save &amp; Play</button>
+</div>
+</div>
+<div id="tv-filter">
+<div class="tvf-row">
+<input id="tvf-jump" type="text" inputmode="numeric" placeholder="Q#" autocomplete="off">
+<button class="tv-btn teal" id="tvf-go">Go</button>
+<input id="tvf-search" type="text" placeholder="Search questions, answers, notes…" autocomplete="off">
+</div>
+<div class="tvf-row" id="tvf-levels"></div>
+<div id="tvf-count"></div>
 </div>
 </div>
 <div id="tv-scroll">
@@ -423,13 +467,15 @@ function niceNum(v){return Math.round(v*100)/100;}
 
 function svgBox(p){
   var s=p.s,n=s.length;
-  var named=false;
-  for(var i=0;i<n;i++){if(s[i].n)named=true;}
+  var named=false,maxLen=0;
+  for(var i=0;i<n;i++){if(s[i].n){named=true;if(s[i].n.length>maxLen)maxLen=s[i].n.length;}}
+  var labelSize=maxLen>13?9.5:(maxLen>9?10.5:12);
   var W=440,padR=16;
-  var plotL=named?58:14,plotR=W-padR,plotW=plotR-plotL;
+  var plotL=named?Math.min(132,12+Math.ceil(maxLen*labelSize*0.62)):14;
+  var plotR=W-padR,plotW=plotR-plotL;
   var top=10,rowH=n>1?56:62,boxH=n>1?26:30;
   var axisY=top+n*rowH+6;
-  var H=axisY+30;
+  var H=axisY+(p.axisLabel?48:30);
   function X(v){return plotL+(v-p.lo)/(p.hi-p.lo)*plotW;}
   var o='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" role="img">';
   // gridlines
@@ -445,12 +491,15 @@ function svgBox(p){
     o+='<line x1="'+x+'" y1="'+axisY+'" x2="'+x+'" y2="'+(axisY+5)+'" stroke="#666" stroke-width="1.5"/>';
     o+='<text x="'+x+'" y="'+(axisY+19)+'" text-anchor="middle" font-size="11" fill="#777" font-family="system-ui,sans-serif">'+niceNum(v)+'</text>';
   }
+  if(p.axisLabel){
+    o+='<text x="'+((plotL+plotR)/2)+'" y="'+(axisY+38)+'" text-anchor="middle" font-size="11" fill="#999" font-family="system-ui,sans-serif">'+esc(p.axisLabel)+'</text>';
+  }
   // boxes
   for(i=0;i<n;i++){
     var d=s[i],cy=top+i*rowH+rowH/2,col=(n===2&&i===1?CBOX2:CBOX);
     var y0=cy-boxH/2,y1=cy+boxH/2;
     if(d.n){
-      o+='<text x="'+(plotL-8)+'" y="'+(cy+4)+'" text-anchor="end" font-size="12" font-weight="700" fill="'+col+'" font-family="system-ui,sans-serif">'+esc(d.n)+'</text>';
+      o+='<text x="'+(plotL-7)+'" y="'+(cy+4)+'" text-anchor="end" font-size="'+labelSize+'" font-weight="700" fill="'+col+'" font-family="system-ui,sans-serif">'+esc(d.n)+'</text>';
     }
     // whiskers
     o+='<line x1="'+X(d.min)+'" y1="'+cy+'" x2="'+X(d.q1)+'" y2="'+cy+'" stroke="'+col+'" stroke-width="2"/>';
@@ -628,7 +677,7 @@ var GROUP_PAIRS=[["Class A","Class B"],["Team X","Team Y"],["Year 9","Year 10"],
 
 function genCompare(){
   var step=choose([5,10]),base=choose([0,step*4,step*6]);
-  function series(){var k=0,g=[0];for(var i=0;i<4;i++){k+=rndInt(1,3);g.push(k);}return g.map(function(x){return base+x*step;});}
+  function series(){var k=rndInt(0,2),g=[k];for(var i=0;i<4;i++){k+=rndInt(1,3);g.push(k);}return g.map(function(x){return base+x*step;});}
   var a=series(),c=series(),guard=0;
   // keep the two genuinely different, on both centre and spread
   while(guard++<40&&(a[2]===c[2]||Math.abs((a[3]-a[1])-(c[3]-c[1]))<step))c=series();
@@ -661,17 +710,204 @@ function genCompare(){
     why:"consistent means bunched together rather than scattered, so this is about spread, not about who scored higher. "+names[0]+"'s box runs "+a[1]+" to "+a[3]+", an IQR of "+iqrA+". "+names[1]+"'s runs "+c[1]+" to "+c[3]+", an IQR of "+iqrC+". the smaller IQR is the more consistent group."};
 }
 
-var GEN={list:genList,dot:genDotQ,fence:genFence,boxread:genBoxRead,compare:genCompare};
+var GEN={list:genList,dot:genDotQ,fence:genFence,boxread:genBoxRead,compare:genCompare,
+         table:genTable,scenario:genScenario};
 
 // how many generated cards each level gets, and of what kind
 var GEN_SLOTS={1:["list","list","list","dot"],2:["fence","fence","boxread"],
-               3:["boxread","boxread"],4:["dot","dot"],5:["compare","compare","compare"]};
+               3:["boxread","boxread","table"],4:["dot","dot"],
+               5:["compare","compare","table","scenario","scenario"]};
+
+/* ── Table questions ──────────────────────────────────────────────
+   A five-number summary table filled in from one or two box plots.
+   Every cell is checked separately so a student can see exactly which
+   value they misread, but the card scores as a single question.
+─────────────────────────────────────────────────────────────────*/
+
+function buildTable(d){
+  var t=document.getElementById("ttable");
+  var h='<tr><th class="tlab"></th>';
+  d.cols.forEach(function(c){h+='<th>'+esc(c)+'</th>';});
+  h+='</tr>';
+  d.rows.forEach(function(r,ri){
+    h+='<tr><td class="tlab">'+esc(r[0])+'</td>';
+    for(var ci=0;ci<d.cols.length;ci++){
+      h+='<td><input class="tcell" id="tc'+ri+'_'+ci+'" type="text" inputmode="decimal" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"></td>';
+    }
+    h+='</tr>';
+  });
+  t.innerHTML=h;
+  document.getElementById("tcheck").disabled=false;
+  document.getElementById("tcheck").textContent="Check ✓";
+}
+
+function numEq(raw,want){
+  var a=String(raw).replace(/[\s,]/g,"").replace(/^\+/,"").replace(/[\u2212\u2013\u2014]/g,"-");
+  var na=parseFloat(a);
+  if(isNaN(na)||!/^-?\d*\.?\d+$/.test(a))return false;
+  return Math.abs(na-Number(want))<1e-9;
+}
+
+function checkTable(){
+  if(answered)return;
+  var blank=0;
+  cur.rows.forEach(function(r,ri){
+    for(var ci=0;ci<cur.cols.length;ci++){
+      if(!document.getElementById("tc"+ri+"_"+ci).value.trim())blank++;
+    }
+  });
+  var fb=document.getElementById("fb");
+  if(blank){
+    fb.textContent="Fill in all "+(cur.rows.length*cur.cols.length)+" boxes first — "+blank+" still empty.";
+    fb.className="fbbad";
+    return;
+  }
+  answered=true;
+  var wrong=0,total=0;
+  cur.rows.forEach(function(r,ri){
+    for(var ci=0;ci<cur.cols.length;ci++){
+      var el=document.getElementById("tc"+ri+"_"+ci);
+      var ok=numEq(el.value,r[ci+1]);
+      total++;
+      el.className="tcell "+(ok?"ok":"bad");
+      el.disabled=true;
+      if(!ok){wrong++;el.value=el.value+"  →  "+r[ci+1];}
+    }
+  });
+  document.getElementById("tcheck").disabled=true;
+  if(!wrong){
+    C++;totalC++;streak++;lvXP+=30;totalXP+=30;
+    fb.textContent="✓ All "+total+" correct! +30 XP";fb.className="fbok";
+  } else {
+    W++;totalW++;streak=0;weak.push(cur.__ph||cur);
+    fb.textContent="✗ "+wrong+" of "+total+" wrong — corrections shown in red";fb.className="fbbad";
+  }
+  showNote(!wrong);updateStats();updateBar();
+  document.getElementById("nxt").style.display="block";
+}
+
+// ── Generator: five-number summary table from two box plots ──
+var TABLE_PAIRS=[["Science","History"],["English","Maths"],["Term 1","Term 2"],
+                 ["Class A","Class B"],["Boys","Girls"],["Before","After"]];
+
+function genTable(){
+  var step=choose([1,2,5]),base=choose([0,step*2,step*5]);
+  function series(){var k=rndInt(0,2),g=[k];for(var i=0;i<4;i++){k+=rndInt(1,3);g.push(k);}
+    return g.map(function(x){return base+x*step;});}
+  var a=series(),c=series(),guard=0;
+  while(guard++<40&&a[2]===c[2])c=series();
+  var names=choose(TABLE_PAIRS);
+  var p={k:"box",lo:Math.max(0,base-step),hi:Math.max(a[4],c[4])+step,step:step,
+    s:[{n:names[0],min:a[0],q1:a[1],med:a[2],q3:a[3],max:a[4]},
+       {n:names[1],min:c[0],q1:c[1],med:c[2],q3:c[3],max:c[4]}]};
+  var rows=[
+    ["Median",a[2],c[2]],
+    ["Lower quartile",a[1],c[1]],
+    ["Upper quartile",a[3],c[3]],
+    ["Range",a[4]-a[0],c[4]-c[0]],
+    ["Interquartile range",a[3]-a[1],c[3]-c[1]]
+  ];
+  var why="take one plot at a time and read its five marks off the gridlines before you calculate anything. "+
+    names[0]+": minimum "+a[0]+", q1 "+a[1]+", median "+a[2]+", q3 "+a[3]+", maximum "+a[4]+". "+
+    names[1]+": minimum "+c[0]+", q1 "+c[1]+", median "+c[2]+", q3 "+c[3]+", maximum "+c[4]+". "+
+    "the median is the line inside the box, the quartiles are the two box edges, and the whisker tips are the minimum and maximum. "+
+    "then the last two rows are worked out rather than read: range = maximum − minimum, so "+a[4]+" − "+a[0]+" = "+(a[4]-a[0])+" and "+c[4]+" − "+c[0]+" = "+(c[4]-c[0])+". "+
+    "IQR = q3 − q1, so "+a[3]+" − "+a[1]+" = "+(a[3]-a[1])+" and "+c[3]+" − "+c[1]+" = "+(c[3]-c[1])+".";
+  return {lv:choose([3,5]),t:"comp",ty:"table",
+    q:"Complete the table using the two box plots",
+    p:p,cols:[names[0],names[1]],rows:rows,a:"(table)",
+    note:"All read straight off the plot except range and IQR, which you calculate.",
+    why:why};
+}
+
+/* ── Multi-part scenario questions ────────────────────────────────
+   A real-world context with one figure and several parts worked
+   through in order, the way exam questions are actually structured.
+   Each part scores on its own; missing any part requeues the whole
+   scenario, which then regenerates with new numbers.
+─────────────────────────────────────────────────────────────────*/
+
+var SCENARIOS=[
+ {stem:"The parallel box plots show the prices, in dollars, of second-hand bikes sold at two shops.",
+  A:"Cycle Barn",B:"Wheelhouse",unit:"dollars",money:true,steps:[20,50],bases:[0,1]},
+ {stem:"The parallel box plots show the prices, in dollars, of used phones sold by two online sellers.",
+  A:"PhoneHub",B:"ReCell",unit:"dollars",money:true,steps:[20,50],bases:[0,1]},
+ {stem:"The parallel box plots show delivery times, in minutes, for two courier companies.",
+  A:"Swift Post",B:"CityRun",unit:"minutes",money:false,steps:[5,10],bases:[0,1,2]},
+ {stem:"The parallel box plots show the heights, in centimetres, of tomato plants grown with two fertilisers.",
+  A:"Fertiliser A",B:"Fertiliser B",unit:"centimetres",money:false,steps:[5,10],bases:[0,1,2]},
+ {stem:"The parallel box plots show the number of hours worked each week by staff at two cafes.",
+  A:"Beans on Bay",B:"The Roastery",unit:"hours",money:false,steps:[2,5],bases:[0,1,2]},
+ {stem:"The parallel box plots show the marks, out of 100, for two classes sitting the same test.",
+  A:"Class 10A",B:"Class 10B",unit:"marks",money:false,steps:[5,10],bases:[0,1]}
+];
+
+function genScenario(){
+  var sc=choose(SCENARIOS),step=choose(sc.steps);
+  var base=sc.money?0:choose(sc.bases)*step*2;
+  function series(){var k=sc.money?rndInt(1,3):rndInt(0,2),g=[k];
+    for(var i=0;i<4;i++){k+=rndInt(1,3);g.push(k);}
+    return g.map(function(x){return base+x*step;});}
+  var a=series(),c=series(),guard=0;
+  // both comparisons need a definite answer, so no ties on median or range
+  while(guard++<80&&(a[2]===c[2]||(a[4]-a[0])===(c[4]-c[0])||(a[3]-a[1])===(c[3]-c[1])))c=series();
+
+  var nameA=sc.A,nameB=sc.B,unit=sc.unit;
+  var medHi=a[2]>c[2]?nameA:nameB, medGap=Math.abs(a[2]-c[2]);
+  var rngA=a[4]-a[0],rngC=c[4]-c[0];
+  var rngHi=rngA>rngC?nameA:nameB;
+  var maxGap=Math.abs(a[4]-c[4]);
+
+  var parts=[];
+
+  parts.push({ty:"mcq",q:"Which group has the higher median?",a:medHi,
+    x:[medHi===nameA?nameB:nameA,"They are the same","You can't tell from a box plot"],
+    note:nameA+"'s median is "+a[2]+"; "+nameB+"'s is "+c[2]+".",
+    why:"the median is the line inside each box. read both down to the scale: "+nameA+" sits at "+a[2]+" and "+nameB+" at "+c[2]+", so "+medHi+" is higher."});
+
+  parts.push({ty:"text",q:"What is the difference between the two medians?",a:String(medGap),
+    note:"|"+a[2]+" − "+c[2]+"| = "+medGap+".",
+    why:"read both medians off the plot first — "+a[2]+" and "+c[2]+" — then subtract the smaller from the bigger: "+Math.max(a[2],c[2])+" − "+Math.min(a[2],c[2])+" = "+medGap+" "+unit+". a difference is always given as a positive amount."});
+
+  parts.push({ty:"mcq",q:"Which group has the greater range?",a:rngHi,
+    x:[rngHi===nameA?nameB:nameA,"Their ranges are equal","The range can't be read from a box plot"],
+    note:nameA+"'s range is "+rngA+"; "+nameB+"'s is "+rngC+".",
+    why:"range is maximum minus minimum, so use the whisker tips, not the box edges. "+nameA+": "+a[4]+" − "+a[0]+" = "+rngA+". "+nameB+": "+c[4]+" − "+c[0]+" = "+rngC+". so "+rngHi+" has the greater range."});
+
+  if(maxGap>0)
+    parts.push({ty:"text",q:"What is the difference between the two largest values?",a:String(maxGap),
+      note:"|"+a[4]+" − "+c[4]+"| = "+maxGap+".",
+      why:"the largest value in each group is the tip of its right whisker, not the edge of the box. those are "+a[4]+" and "+c[4]+", so the difference is "+Math.max(a[4],c[4])+" − "+Math.min(a[4],c[4])+" = "+maxGap+" "+unit+"."});
+
+  // the buy-how-many part only when it divides cleanly and the cheapest isn't free
+  var lowA=Math.min(a[0],c[0]),highB=Math.max(a[4],c[4]);
+  var cheapName=a[0]<=c[0]?nameA:nameB, dearName=a[4]>=c[4]?nameA:nameB;
+  if(sc.money&&lowA>0&&highB%lowA===0&&highB/lowA>1&&highB/lowA<=30)
+    parts.push({ty:"text",q:"How many of the cheapest item could be bought for the price of the most expensive one?",
+      a:String(highB/lowA),
+      note:highB+" ÷ "+lowA+" = "+(highB/lowA)+".",
+      why:"the cheapest item anywhere on the plot is the lowest whisker tip, "+lowA+" "+unit+" at "+cheapName+". the most expensive is the highest whisker tip, "+highB+" "+unit+" at "+dearName+". divide the big one by the small one: "+highB+" ÷ "+lowA+" = "+(highB/lowA)+"."});
+
+  parts.push({ty:"mcq",q:"Which group's results are more consistent?",
+    a:(a[3]-a[1])<(c[3]-c[1])?nameA:nameB,
+    x:[(a[3]-a[1])<(c[3]-c[1])?nameB:nameA,"Both are equally consistent","Consistency can't be judged from these plots"],
+    note:"Compare IQRs: "+(a[3]-a[1])+" against "+(c[3]-c[1])+".",
+    why:"consistent means bunched together, so compare spread rather than centre. "+nameA+"'s box runs "+a[1]+" to "+a[3]+", an IQR of "+(a[3]-a[1])+". "+nameB+"'s runs "+c[1]+" to "+c[3]+", an IQR of "+(c[3]-c[1])+". the narrower box is the more consistent group."});
+
+  var p={k:"box",lo:Math.max(0,base-step),hi:Math.max(a[4],c[4])+step,step:step,
+    axisLabel:unit.charAt(0).toUpperCase()+unit.slice(1),
+    s:[{n:nameA,min:a[0],q1:a[1],med:a[2],q3:a[3],max:a[4]},
+       {n:nameB,min:c[0],q1:c[1],med:c[2],q3:c[3],max:c[4]}]};
+
+  return {lv:5,t:"comp",ty:"multi",q:sc.stem,p:p,parts:parts,a:"(multi-part)",
+    note:"",why:""};
+}
 
 /* ── Quiz flow ── */
 // make sure a figure appears within the first few cards, so levels that mix
 // list questions and plots never open with a long run of plain arithmetic
 function seedFigureEarly(d){
-  var HASFIG={dot:1,boxread:1,compare:1};
+  var HASFIG={dot:1,boxread:1,compare:1,table:1,scenario:1};
   var first=-1;
   for(var i=0;i<d.length;i++){if(d[i].p||(d[i].gen&&HASFIG[d[i].gen])){first=i;break;}}
   if(first<2)return;
@@ -716,7 +952,7 @@ function beginCards(){
 }
 
 function hideAll(){
-  ["qhead","fig","grid","finput","frow","stats","level-intro","level-summary","done"].forEach(function(id){
+  ["qhead","fig","partq","grid","finput","tinput","frow","stats","level-intro","level-summary","done"].forEach(function(id){
     document.getElementById(id).style.display="none";
   });
 }
@@ -742,7 +978,7 @@ function next(){
 
   document.getElementById("qtext").textContent=cur.q;
   var sub={med:"Give your answer as a number",spr:"Give your answer as a number",read:"Read the values off the plot",match:"Look carefully at the figure",comp:"Compare the two groups"};
-  document.getElementById("qsub").textContent=cur.ty==="text"?(sub[cur.t]||""):"Choose the correct answer:";
+  document.getElementById("qsub").textContent=cur.ty==="table"?"Fill in every box":(cur.ty==="text"?(sub[cur.t]||""):"Choose the correct answer:");
   document.getElementById("qhead").style.display="block";
   document.getElementById("frow").style.display="flex";
   document.getElementById("stats").style.display="flex";
@@ -751,8 +987,16 @@ function next(){
   if(cur.p){fig.innerHTML=renderPlot(cur.p);fig.style.display="block";}
   else{fig.innerHTML="";fig.style.display="none";}
 
-  if(cur.ty==="text"){
+  if(cur.ty==="multi"){curPart=0;renderPart();return;}
+
+  if(cur.ty==="table"){
     document.getElementById("grid").style.display="none";
+    document.getElementById("finput").style.display="none";
+    document.getElementById("tinput").style.display="flex";
+    buildTable(cur);
+  } else if(cur.ty==="text"){
+    document.getElementById("grid").style.display="none";
+    document.getElementById("tinput").style.display="none";
     document.getElementById("finput").style.display="flex";
     var fi=document.getElementById("fanswer");
     fi.value="";fi.className="";fi.disabled=false;
@@ -760,20 +1004,63 @@ function next(){
   } else {
     document.getElementById("grid").style.display="grid";
     document.getElementById("finput").style.display="none";
-    var opts=shuf([cur.a,cur.x[0],cur.x[1],cur.x[2]]);
+    document.getElementById("tinput").style.display="none";
+    var aq=activeQ();var opts=shuf([aq.a,aq.x[0],aq.x[1],aq.x[2]]);
     for(var i=0;i<4;i++){
       var el=document.getElementById("o"+i);
       el.className="opt";
       el.querySelector(".txt").textContent=opts[i]||"";
       el.dataset.val=opts[i]||"";
     }
-    bindOpts(cur.a);
+    bindOpts(activeQ().a);
   }
+}
+
+var curPart=0;
+function activeQ(){return (cur&&cur.ty==="multi")?cur.parts[curPart]:cur;}
+
+function renderPart(){
+  answered=false;
+  document.getElementById("nxt").style.display="none";
+  var fb=document.getElementById("fb");fb.textContent="";fb.className="";
+  var fn=document.getElementById("fnote");fn.style.display="none";fn.className="";
+  document.getElementById("frow").className="";
+
+  var q=cur.parts[curPart];
+  document.getElementById("qsub").textContent="Part "+(curPart+1)+" of "+cur.parts.length;
+  document.getElementById("partlabel").textContent="abcdefgh".charAt(curPart);
+  document.getElementById("parttext").textContent=q.q;
+  document.getElementById("partq").style.display="flex";
+  document.getElementById("tinput").style.display="none";
+
+  if(q.ty==="text"){
+    document.getElementById("grid").style.display="none";
+    document.getElementById("finput").style.display="flex";
+    var fi=document.getElementById("fanswer");fi.value="";fi.className="";fi.disabled=false;
+    document.getElementById("fcheck").disabled=false;
+  } else {
+    document.getElementById("finput").style.display="none";
+    document.getElementById("grid").style.display="grid";
+    var opts=shuf([q.a,q.x[0],q.x[1],q.x[2]]);
+    for(var i=0;i<4;i++){
+      var el=document.getElementById("o"+i);
+      el.className="opt";
+      el.querySelector(".txt").textContent=opts[i]||"";
+      el.dataset.val=opts[i]||"";
+    }
+    bindOpts(q.a);
+  }
+}
+
+function advance(){
+  if(cur&&cur.ty==="multi"&&curPart<cur.parts.length-1){curPart++;renderPart();return;}
+  next();
 }
 
 function showNote(ok){
   var fn=document.getElementById("fnote");
-  var txt=ok?(cur.note||cur.why||""):(cur.why||cur.note||"");
+  var q=activeQ();
+  var txt=ok?(q.note||q.why||""):(q.why||q.note||"");
   if(txt&&txt.trim()){
     fn.textContent=txt;
     fn.className=ok?"":"walk";
@@ -808,11 +1095,23 @@ function pick(el,chosen,correct){
     fb.textContent=streak>=3?"✓ "+streak+" streak! +"+(15+bonus)+" XP":"✓ Correct!";
     fb.className="fbok";
   } else {
-    el.classList.add("bad");W++;totalW++;streak=0;weak.push(cur.__ph||cur);
+    el.classList.add("bad");W++;totalW++;streak=0;requeue();
     fb.textContent="✗ Answer: "+correct;fb.className="fbbad";
   }
   showNote(chosen===correct);updateStats();updateBar();
-  document.getElementById("nxt").style.display="block";
+  showNextButton();
+}
+
+function showNextButton(){
+  var b=document.getElementById("nxt");
+  b.textContent=(cur&&cur.ty==="multi"&&curPart<cur.parts.length-1)?"Next part →":"Next →";
+  b.style.display="block";
+}
+
+function requeue(){
+  if(cur.__missed)return;          // one requeue per card, not per part
+  cur.__missed=true;
+  weak.push(cur.__ph||cur);
 }
 
 function checkAnswer(){
@@ -822,7 +1121,7 @@ function checkAnswer(){
   answered=true;fi.disabled=true;document.getElementById("fcheck").disabled=true;
 
   function norm(s){return s.replace(/[\s,]/g,"").replace(/^\+/,"").replace(/[\u2212\u2013\u2014]/g,"-");}
-  var a=norm(raw),b=norm(String(cur.a));
+  var a=norm(raw),b=norm(String(activeQ().a));
   var na=parseFloat(a),nb=parseFloat(b);
   var ok;
   if(!isNaN(na)&&!isNaN(nb)&&/^-?\d*\.?\d+$/.test(a)&&/^-?\d*\.?\d+$/.test(b)){
@@ -836,11 +1135,11 @@ function checkAnswer(){
     fi.className="ok";C++;totalC++;streak++;lvXP+=20;totalXP+=20;
     fb.textContent="✓ Correct!";fb.className="fbok";
   } else {
-    fi.className="bad";W++;totalW++;streak=0;weak.push(cur.__ph||cur);
-    fb.textContent="✗ Answer: "+cur.a;fb.className="fbbad";
+    fi.className="bad";W++;totalW++;streak=0;requeue();
+    fb.textContent="✗ Answer: "+activeQ().a;fb.className="fbbad";
   }
   showNote(ok);updateStats();updateBar();
-  document.getElementById("nxt").style.display="block";
+  showNextButton();
 }
 
 function updateBar(){document.getElementById("lv").textContent="Level "+currentLevel+" / "+MAX_LEVEL;}
@@ -903,9 +1202,72 @@ function showTeacher(){
   renderEditor();
 }
 
+var EDITOR_CARDS=[];
+var FILTER={text:"",lv:0};
+
 function renderEditor(){
   var list=document.getElementById("qlist");list.innerHTML="";
+  EDITOR_CARDS=[];
   DATA.forEach(function(d,i){renderCard(d,i,list);});
+  buildLevelPills();
+  applyFilter();
+}
+
+function buildLevelPills(){
+  var box=document.getElementById("tvf-levels");
+  if(box.dataset.built)return;
+  box.dataset.built="1";
+  [["All",0],["Lv 1",1],["Lv 2",2],["Lv 3",3],["Lv 4",4],["Lv 5",5]].forEach(function(pair){
+    var el=document.createElement("div");
+    el.className="tvf-pill"+(pair[1]===FILTER.lv?" active":"");
+    el.textContent=pair[0];
+    el.addEventListener("click",function(){
+      FILTER.lv=pair[1];
+      box.querySelectorAll(".tvf-pill").forEach(function(x){x.classList.remove("active");});
+      el.classList.add("active");
+      applyFilter();
+    });
+    box.appendChild(el);
+  });
+}
+
+function applyFilter(){
+  var q=FILTER.text.toLowerCase(),shown=0;
+  EDITOR_CARDS.forEach(function(c){
+    var hit=true;
+    if(FILTER.lv&&c.d.lv!==FILTER.lv)hit=false;
+    if(hit&&q){
+      var hay=[c.d.q,c.d.a,c.d.note,c.d.why].concat(c.d.x||[]).join(" ").toLowerCase();
+      if(hay.indexOf(q)<0)hit=false;
+    }
+    c.wrap.style.display=hit?"":"none";
+    if(hit)shown++;
+  });
+  var lbl=document.getElementById("tvf-count");
+  lbl.textContent=(shown===EDITOR_CARDS.length)
+    ? EDITOR_CARDS.length+" questions"
+    : "showing "+shown+" of "+EDITOR_CARDS.length;
+}
+
+function jumpTo(num){
+  var i=parseInt(num,10);
+  if(isNaN(i)||i<1||i>EDITOR_CARDS.length){
+    document.getElementById("tvf-count").textContent="No question "+num+" — there are "+EDITOR_CARDS.length+".";
+    return;
+  }
+  // clear filters so the target is definitely on screen
+  FILTER.text="";FILTER.lv=0;
+  document.getElementById("tvf-search").value="";
+  var box=document.getElementById("tvf-levels");
+  box.querySelectorAll(".tvf-pill").forEach(function(x,ix){x.classList.toggle("active",ix===0);});
+  applyFilter();
+  var c=EDITOR_CARDS[i-1];
+  if(!c.body.classList.contains("open")){c.body.classList.add("open");c.refresh();}
+  var head=document.getElementById("tv-head").getBoundingClientRect().height;
+  var y=c.wrap.getBoundingClientRect().top+window.pageYOffset-head-8;
+  window.scrollTo(0,Math.max(0,y));
+  c.wrap.classList.add("flash");
+  setTimeout(function(){c.wrap.classList.remove("flash");},1100);
 }
 
 function renderCard(d,i,list){
@@ -976,6 +1338,7 @@ function renderCard(d,i,list){
   body.appendChild(makeTextarea("Full working (shown when wrong)",d.why||"",function(v){d.why=v;refresh();}));
 
   wrap.appendChild(body);
+  EDITOR_CARDS.push({wrap:wrap,body:body,refresh:refresh,d:d});
   hdr.addEventListener("click",function(e){
     if(e.target.classList.contains("qcard-del"))return;
     body.classList.toggle("open");
@@ -1006,7 +1369,11 @@ function renderPreview(d,box){
     h+='<div class="pv-nofig">No figure on this question</div>';
   }
 
-  if(d.ty==="text"){
+  if(d.ty==="multi"){
+    h+='<div class="pv-ans">Multi-part scenario — '+((d.parts||[]).length)+' parts</div>';
+  } else if(d.ty==="table"){
+    h+='<div class="pv-ans">Table question — '+((d.rows||[]).length*((d.cols||[]).length||1))+' cells</div>';
+  } else if(d.ty==="text"){
     h+='<div class="pv-ans">Accepts: '+esc(String(d.a===undefined?"":d.a))+'</div>';
   } else {
     h+='<div class="pv-opts">';
@@ -1073,8 +1440,10 @@ function wire(id,fn){
 }
 
 wire("li-go",beginCards);
-wire("nxt",next);
+wire("nxt",advance);
 wire("fcheck",checkAnswer);
+wire("tcheck",checkTable);
+wire("tvf-go",function(){jumpTo(document.getElementById("tvf-jump").value.trim());});
 wire("ls-next",function(){currentLevel>=MAX_LEVEL?showFinalDone():startLevel(currentLevel+1);});
 wire("ls-retry",function(){startLevel(currentLevel);});
 wire("d-again",function(){totalC=0;totalW=0;totalXP=0;startLevel(1);});
@@ -1092,6 +1461,8 @@ wire("add-btn",function(){
   document.getElementById("tv-scroll").scrollTop=999999;
 });
 document.getElementById("fanswer").addEventListener("keydown",function(e){if(e.key==="Enter")checkAnswer();});
+document.getElementById("tvf-jump").addEventListener("keydown",function(e){if(e.key==="Enter")jumpTo(this.value.trim());});
+document.getElementById("tvf-search").addEventListener("input",function(){FILTER.text=this.value;applyFilter();});
 
 startLevel(1);
 </script>
