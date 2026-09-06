@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Quartiles &amp; Comparing Data Sets</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:#0D9488;min-height:100vh;display:flex;flex-direction:column}
+#bar{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(0,0,0,0.15);flex-shrink:0}
+#prog-wrap{flex:1;height:6px;background:rgba(255,255,255,0.3);border-radius:3px;overflow:hidden}
+#prog{height:100%;width:0%;background:#fff;border-radius:3px;transition:width .3s}
+#lv{background:rgba(0,0,0,0.2);color:#fff;font-size:12px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
+#teacher-toggle{background:rgba(0,0,0,0.18);color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer}
+#quiz-view{flex:1;display:flex;flex-direction:column}
+#retry-bar{background:#c0392b;color:#fff;font-size:13px;font-weight:600;text-align:center;padding:6px;display:none}
+#stage{flex:1;padding:12px;display:flex;justify-content:center;align-items:flex-start}
+#card{background:#fff;border-radius:16px;width:100%;max-width:480px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.18)}
+#qhead{padding:22px 18px 14px;text-align:center}
+#badge{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+.bmed{background:#E0F2F1;color:#00695C}
+.bspr{background:#FEF3E2;color:#854F0B}
+.bread{background:#EEF2FF;color:#3730A3}
+.bmatch{background:#EEEDFE;color:#3C3489}
+.bcomp{background:#FCE7F3;color:#9D174D}
+#qtext{font-size:19px;font-weight:700;color:#111;line-height:1.35}
+#qsub{font-size:12px;color:#999;margin-top:5px}
+#fig{padding:4px 10px 14px;display:none;background:#fbfbfb;border-top:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0}
+#fig svg{display:block;width:100%;height:auto}
+#fig .stem-wrap{padding:10px 4px}
+#fig table.stem{width:100%;border-collapse:collapse;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px}
+#fig table.stem th{font-family:-apple-system,system-ui,sans-serif;font-size:11px;color:#888;font-weight:700;padding:3px 6px;border-bottom:1.5px solid #ddd}
+#fig table.stem td{padding:3px 6px;color:#222}
+#fig table.stem td.sl{text-align:right;letter-spacing:.18em}
+#fig table.stem td.sm{text-align:center;font-weight:700;background:#f0f0f0;width:36px;color:#0F766E}
+#fig table.stem td.sr{text-align:left;letter-spacing:.18em}
+#fig .stem-key{font-family:-apple-system,system-ui,sans-serif;font-size:11px;color:#999;padding-top:6px;text-align:center}
+#grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;background:#d0d0d0;border-top:2px solid #d0d0d0}
+.opt{background:#f0f0f0;padding:18px 12px;display:flex;align-items:flex-start;gap:8px;min-height:90px;cursor:pointer}
+.opt:active{background:#e0e0e0}
+.opt.ok{background:#d4edda}.opt.bad{background:#f8d7da}.opt.show{background:#d4edda}
+.num{width:20px;height:20px;border-radius:4px;background:#ccc;color:#555;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.opt.ok .num,.opt.show .num{background:#28a745;color:#fff}
+.opt.bad .num{background:#dc3545;color:#fff}
+.txt{font-size:14px;color:#333;line-height:1.35}
+.opt.ok .txt,.opt.show .txt{color:#155724;font-weight:600}
+.opt.bad .txt{color:#721c24}
+#finput{padding:16px 18px 20px;display:none;flex-direction:column;align-items:center;gap:10px;border-top:2px solid #eee}
+#finput-hint{font-size:12px;color:#888;text-align:center}
+#fanswer{font-size:20px;padding:12px 14px;border:2px solid #ddd;border-radius:10px;width:100%;text-align:center;background:#fff;color:#222;outline:none;-webkit-appearance:none}
+#fanswer.ok{border-color:#28a745;background:#d4edda;color:#155724}
+#fanswer.bad{border-color:#dc3545;background:#f8d7da;color:#721c24}
+#fcheck{background:#0D9488;color:#fff;border:none;border-radius:10px;padding:13px;font-size:16px;font-weight:700;width:100%;-webkit-appearance:none;cursor:pointer}
+#frow{padding:10px 14px;display:flex;align-items:flex-start;justify-content:space-between;min-height:48px;border-top:1px solid #eee;gap:8px}
+#fb-wrap{flex:1;display:flex;flex-direction:column;gap:4px}
+#fb{font-size:13px;font-weight:600}
+#fnote{font-size:12px;color:#666;line-height:1.5;display:none;padding-top:2px}
+#frow.wide{flex-direction:column;align-items:stretch}
+#frow.wide #nxt{align-self:flex-end;margin-top:10px}
+#fnote.walk{font-size:13px;color:#333;line-height:1.65;background:#F0FDFA;border-left:3px solid #0D9488;border-radius:0 8px 8px 0;padding:10px 12px;margin-top:4px}
+.fbok{color:#155724}.fbbad{color:#721c24}
+#nxt{background:#0D9488;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:14px;font-weight:700;cursor:pointer;display:none;-webkit-appearance:none;flex-shrink:0;align-self:center}
+#stats{display:flex;border-top:1px solid #eee}
+.st{flex:1;text-align:center;padding:9px 2px;border-right:1px solid #eee}
+.st:last-child{border-right:none}
+.sv{font-size:17px;font-weight:700;color:#333}
+.sl{font-size:10px;color:#aaa;margin-top:2px}
+#level-summary,#done{display:none;flex-direction:column;align-items:center;padding:28px 18px;text-align:center}
+#level-summary h2,#done h2{font-size:22px;font-weight:700;color:#222;margin-bottom:6px}
+#level-summary p,#done p{font-size:13px;color:#777;margin-bottom:18px}
+.dg{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%;margin-bottom:20px}
+.dc{background:#f5f5f5;border-radius:10px;padding:12px}
+.dv{font-size:22px;font-weight:700;color:#333}
+.dl{font-size:11px;color:#aaa;margin-top:2px}
+.dbtn{display:block;width:100%;border:none;border-radius:11px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px;-webkit-appearance:none}
+.dbtn:last-child{margin-bottom:0}
+.teal{background:#0D9488;color:#fff}
+.red{background:#dc3545;color:#fff}
+.green{background:#28a745;color:#fff}
+.lv-badge{font-size:48px;margin-bottom:8px}
+.lv-tag{display:inline-block;background:#0D9488;color:#fff;font-size:13px;font-weight:700;padding:4px 16px;border-radius:20px;margin-bottom:12px}
+.unlock-msg{font-size:13px;color:#28a745;font-weight:600;margin-bottom:16px;padding:10px 14px;background:#d4edda;border-radius:10px;width:100%}
+#teacher-view{display:none;flex:1;flex-direction:column;background:#f7f7f7}
+#tv-toolbar{background:#fff;border-bottom:1px solid #eee;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-shrink:0}
+#tv-toolbar h2{font-size:16px;font-weight:700;color:#222}
+#tv-toolbar-right{display:flex;gap:8px}
+.tv-btn{border:none;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;-webkit-appearance:none}
+.tv-btn.teal{background:#0D9488;color:#fff}
+.tv-btn.green{background:#28a745;color:#fff}
+.tv-btn.gray{background:#eee;color:#555}
+#tv-scroll{flex:1;overflow-y:auto;padding:12px 14px}
+.qcard{background:#fff;border-radius:12px;margin-bottom:12px;overflow:hidden;border:1px solid #e8e8e8}
+.qcard-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#f9f9f9;border-bottom:1px solid #eee;cursor:pointer;gap:8px}
+.qcard-num{font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.04em;flex-shrink:0}
+.qcard-preview{font-size:13px;color:#555;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qcard-lv{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#E0F2F1;color:#00695C;flex-shrink:0}
+.qcard-del{background:#f8d7da;border:none;border-radius:6px;padding:5px 10px;font-size:12px;font-weight:700;color:#721c24;cursor:pointer;flex-shrink:0}
+.qcard-body{padding:12px 14px;display:none;flex-direction:column;gap:10px}
+.qcard-body.open{display:flex}
+.field-label{font-size:11px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px}
+.field-input{width:100%;padding:9px 11px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:14px;background:#fff;color:#222;outline:none;-webkit-appearance:none;font-family:inherit}
+.field-input:focus{border-color:#0D9488}
+textarea.field-input{resize:vertical;min-height:60px;line-height:1.4}
+textarea.plotjson{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;min-height:70px}
+.plot-err{font-size:11px;color:#c0392b;font-weight:600;margin-top:4px;display:none}
+.type-pills,.lv-pills{display:flex;gap:6px;flex-wrap:wrap}
+.type-pill,.lv-pill{border:1.5px solid #e0e0e0;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:600;color:#888;cursor:pointer;background:#fff}
+.type-pill.active{border-color:#0D9488;background:#E0F2F1;color:#00695C}
+.lv-pill.active{border-color:#0D9488;background:#E0F2F1;color:#00695C}
+.opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt-wrap{display:flex;flex-direction:column;gap:4px}
+#add-btn{display:block;width:100%;background:#fff;border:2px dashed #0D9488;border-radius:10px;padding:13px;font-size:14px;font-weight:700;color:#0D9488;cursor:pointer;text-align:center;margin-top:4px;margin-bottom:16px}
+</style>
+</head>
+<body>
+
+<div id="bar">
+<div id="prog-wrap"><div id="prog"></div></div>
+<div id="lv">Level 1</div>
+<button id="teacher-toggle">✏ Teacher</button>
+</div>
+
+<div id="quiz-view">
+<div id="retry-bar">🔁 Retesting cards you missed</div>
+<div id="stage">
+<div id="card">
+
+<div id="qhead">
+<div id="badge" class="bmed">loading</div>
+<div id="qtext">Getting ready…</div>
+<div id="qsub"></div>
+</div>
+
+<div id="fig"></div>
+
+<div id="grid">
+<div class="opt" id="o0"><div class="num">1</div><div class="txt"></div></div>
+<div class="opt" id="o1"><div class="num">2</div><div class="txt"></div></div>
+<div class="opt" id="o2"><div class="num">3</div><div class="txt"></div></div>
+<div class="opt" id="o3"><div class="num">4</div><div class="txt"></div></div>
+</div>
+
+<div id="finput">
+<div id="finput-hint">Type the number only — decimals are fine (e.g. 6.5)</div>
+<input id="fanswer" type="text" inputmode="decimal" placeholder="Your answer…" autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false">
+<button id="fcheck">Check ✓</button>
+</div>
+
+<div id="frow">
+<div id="fb-wrap">
+<div id="fb"></div>
+<div id="fnote"></div>
+</div>
+<button id="nxt">Next →</button>
+</div>
+
+<div id="stats">
+<div class="st"><div class="sv" id="sc">0</div><div class="sl">correct</div></div>
+<div class="st"><div class="sv" id="sr">0</div><div class="sl">retry</div></div>
+<div class="st"><div class="sv" id="ss">0</div><div class="sl">streak 🔥</div></div>
+<div class="st"><div class="sv" id="sa">—</div><div class="sl">accuracy</div></div>
+</div>
+
+<div id="level-summary">
+<div class="lv-badge" id="ls-emoji">⭐</div>
+<div class="lv-tag" id="ls-tag">Level 1 Complete!</div>
+<h2 id="ls-title">Nice work!</h2>
+<div class="dg">
+<div class="dc"><div class="dv" id="ls-c">0</div><div class="dl">correct</div></div>
+<div class="dc"><div class="dv" id="ls-w">0</div><div class="dl">wrong</div></div>
+<div class="dc"><div class="dv" id="ls-acc">—</div><div class="dl">accuracy</div></div>
+<div class="dc"><div class="dv" id="ls-xp">0</div><div class="dl">XP earned</div></div>
+</div>
+<div class="unlock-msg" id="ls-unlock"></div>
+<button class="dbtn green" id="ls-next">Next Level →</button>
+<button class="dbtn red" id="ls-retry">Retry this level</button>
+</div>
+
+<div id="done">
+<div style="font-size:44px;margin-bottom:8px">🏆</div>
+<h2>All levels complete!</h2>
+<p id="dsub"></p>
+<div class="dg">
+<div class="dc"><div class="dv" id="dc1">0</div><div class="dl">correct</div></div>
+<div class="dc"><div class="dv" id="dc2">0</div><div class="dl">wrong</div></div>
+<div class="dc"><div class="dv" id="dc3">—</div><div class="dl">accuracy</div></div>
+<div class="dc"><div class="dv" id="dc4">0</div><div class="dl">XP earned</div></div>
+</div>
+<button class="dbtn teal" id="d-again">Play again from Level 1</button>
+</div>
+
+</div>
+</div>
+</div>
+
+<div id="teacher-view">
+<div id="tv-toolbar">
+<h2>✏ Question Editor</h2>
+<div id="tv-toolbar-right">
+<button class="tv-btn gray" id="tv-cancel">Cancel</button>
+<button class="tv-btn green" id="tv-save">Save &amp; Play</button>
+</div>
+</div>
+<div id="tv-scroll">
+<div id="qlist"></div>
+<button id="add-btn">+ Add question</button>
+</div>
+</div>
+
+<script>
+var LEVEL_INFO=[
+null,
+{emoji:"⭐",title:"Finding the median and quartiles",unlock:"Level 2 unlocked: range, IQR and outliers!"},
+{emoji:"🌟",title:"Range, IQR and outliers",unlock:"Level 3 unlocked: reading box plots!"},
+{emoji:"💫",title:"Reading box plots",unlock:"Level 4 unlocked: matching plots to data!"},
+{emoji:"🔬",title:"Matching plots to data",unlock:"Level 5 unlocked: comparing two data sets!"},
+{emoji:"🏆",title:"Comparing two data sets",unlock:"You've completed all levels!"},
+];
+
+/* ── Plot specs ──────────────────────────────────────────────
+   Box plot:  {k:"box", lo:0, hi:80, step:10, s:[{n:"Label", min,q1,med,q3,max, out:[62]}]}
+   Dot plot:  {k:"dot", lo:5, hi:15, v:[6,6,7,8,...]}
+   Stem plot: {k:"stem", left:"Boys", right:"Girls", key:"5 | 2 means 52",
+               rows:[[stem, "leaves left", "leaves right"], ...]}
+─────────────────────────────────────────────────────────────*/
+
+// ── Figures used in Levels 1 and 2 ──
+var DOT_L1A={k:"dot",lo:2,hi:10,v:[3,4,4,5,5,5,6,7,9]};
+var DOT_L1B={k:"dot",lo:10,hi:19,v:[11,12,12,13,15,15,16,18]};
+var BOX_L1={k:"box",lo:0,hi:24,step:2,s:[{min:4,q1:8,med:12,q3:16,max:22}]};
+var BOX_L2A={k:"box",lo:0,hi:40,step:5,s:[{min:5,q1:12,med:18,q3:24,max:35}]};
+var BOX_L2B={k:"box",lo:5,hi:45,step:5,s:[{min:10,q1:14,med:17,q3:20,max:26,out:[40]}]};
+var DOT_L2={k:"dot",lo:3,hi:13,v:[4,5,5,6,6,6,7,8,12]};
+var DOT_L2C={k:"dot",lo:19,hi:32,v:[21,22,24,25,25,27,28,30]};
+
+var PLOT_A={k:"box",lo:0,hi:80,step:10,s:[{min:10,q1:20,med:30,q3:45,max:70}]};
+var PLOT_B={k:"box",lo:0,hi:22,step:2,s:[{min:2,q1:5,med:9,q3:14,max:20}]};
+var PLOT_C={k:"box",lo:0,hi:45,step:5,s:[{min:5,q1:8,med:10,q3:20,max:40}]};
+var PLOT_D={k:"box",lo:15,hi:70,step:5,s:[{min:20,q1:25,med:30,q3:35,max:40,out:[62]}]};
+var PLOT_MATCH={k:"box",lo:0,hi:22,step:2,s:[
+  {n:"A",min:4,q1:7,med:9,q3:15,max:20},
+  {n:"B",min:4,q1:9,med:12,q3:15,max:20},
+  {n:"C",min:4,q1:7,med:9,q3:12,max:20},
+  {n:"D",min:7,q1:9,med:12,q3:15,max:20}]};
+var PLOT_SINGLE={k:"box",lo:28,hi:46,step:2,s:[{min:31,q1:33.5,med:37,q3:40,max:42}]};
+var PLOT_DOT1={k:"dot",lo:5,hi:15,v:[6,6,7,8,8,8,9,10,12,14]};
+var PLOT_DOT2={k:"dot",lo:1,hi:10,v:[2,3,3,4,4,4,5,5,6,9]};
+var PLOT_CLASS={k:"box",lo:40,hi:90,step:5,s:[
+  {n:"Class A",min:45,q1:55,med:62,q3:70,max:85},
+  {n:"Class B",min:50,q1:60,med:64,q3:68,max:78}]};
+var PLOT_TEAM={k:"box",lo:0,hi:22,step:2,s:[
+  {n:"Team X",min:2,q1:5,med:8,q3:11,max:20},
+  {n:"Team Y",min:2,q1:7,med:8,q3:9,max:14}]};
+var PLOT_STEM={k:"stem",left:"Boys",right:"Girls",key:"5 | 2 means 52 marks",rows:[
+  [4,"8 5","2 6"],
+  [5,"7 5 2","1 4 6 8"],
+  [6,"8 3 1","0 2 5 6"],
+  [7,"4 0",""]]};
+
+var EXTRA_DATA=[
+
+// ── LEVEL 1 figure questions ──
+{lv:1,t:"med",ty:"text",q:"Find the median from this dot plot",a:"5",p:DOT_L1A,note:"Nine dots, so the median is the 5th — it's 5.",why:"each dot is one value, so read them off left to right, counting every dot in a stack: 3, 4, 4, 5, 5, 5, 6, 7, 9. that's 9 values, which is odd, so the median (middle number) is the 5th one. count in five dots and you land on 5. the mistake to watch for is counting stacks instead of dots — the stack of three 5s is three separate values."},
+{lv:1,t:"med",ty:"text",q:"Find Q1 from this dot plot",a:"4",p:DOT_L1A,note:"Lower half is 3, 4, 4, 5, so (4 + 4)/2 = 4.",why:"the values are 3, 4, 4, 5, 5, 5, 6, 7, 9. the median is the 5th (5), and with an odd amount it gets left out of both halves. so the lower half is 3, 4, 4, 5 — four numbers, so q1 is the mean (average) of the middle two: (4 + 4)/2 = 4."},
+{lv:1,t:"med",ty:"text",q:"Find Q3 from this dot plot",a:"6.5",p:DOT_L1A,note:"Upper half is 5, 6, 7, 9, so (6 + 7)/2 = 6.5.",why:"the values are 3, 4, 4, 5, 5, 5, 6, 7, 9 and the median (the 5th) is left out. the upper half is the four values above it: 5, 6, 7, 9. q3 is the mean (average) of the middle two of those: (6 + 7)/2 = 13/2 = 6.5."},
+{lv:1,t:"med",ty:"text",q:"Find the median from this dot plot",a:"14",p:DOT_L1B,note:"Eight dots, so average the 4th and 5th: (13 + 15)/2 = 14.",why:"read every dot: 11, 12, 12, 13, 15, 15, 16, 18. that's 8 values, which is even, so there's no single middle dot. take the 4th and 5th — 13 and 15 — and find the mean (average): (13 + 15)/2 = 28/2 = 14. notice nobody actually scored 14, and that's fine."},
+{lv:1,t:"med",ty:"mcq",q:"On this box plot, which value does the line inside the box show?",a:"The median (12)",x:["Q1 (8)","Q3 (16)","The mean of all the values"],p:BOX_L1,note:"The line inside the box is always the median.",why:"a box plot has five marks on it. the two whisker tips are the minimum and maximum. the two box edges are q1 on the left and q3 on the right. the line drawn inside the box is the median. here that line sits at 12. box plots never show the mean, so that option is out no matter what."},
+{lv:1,t:"med",ty:"mcq",q:"On this box plot, what does the left-hand edge of the box show?",a:"Q1 — a quarter of the values are below it",x:["The minimum value","The median","The smallest value inside the box"],p:BOX_L1,note:"The left box edge is Q1; the whisker tip is the minimum.",why:"it's easy to mix these two up because they're both on the left. the whisker tip, right out at 4, is the minimum — the smallest value in the whole set. the box edge, at 8, is q1, the point where a quarter of the values sit below. the gap between them is the bottom 25% of the data spread out."},
+
+// ── LEVEL 2 figure questions ──
+{lv:2,t:"spr",ty:"text",q:"Find the IQR from this box plot",a:"12",p:BOX_L2A,note:"Box runs 12 to 24, so 24 − 12 = 12.",why:"the IQR is the width of the box, because the box is drawn from q1 to q3. read the left edge: 12. read the right edge: 24. IQR = 24 − 12 = 12. don't use the whisker tips for this — those would give you the range."},
+{lv:2,t:"spr",ty:"text",q:"Find the range from this box plot",a:"30",p:BOX_L2A,note:"Whisker tips are 5 and 35, so 35 − 5 = 30.",why:"range is maximum minus minimum, and on a box plot those are the two whisker tips rather than the box edges. the left tip is at 5 and the right tip is at 35, so range = 35 − 5 = 30. compare that with the IQR of 12 — the range is always bigger, because it covers all the data instead of just the middle half."},
+{lv:2,t:"spr",ty:"mcq",q:"What does the separate dot at 40 tell you about this data set?",a:"It is an outlier, past the upper fence of 29",x:["It is simply the maximum value","The plot has been drawn incorrectly","It is the mean of the data"],p:BOX_L2B,note:"Fence = 20 + 1.5 × 6 = 29, and 40 is beyond it.",why:"check it with the fence rule rather than trusting your eye. the box runs from q1 = 14 to q3 = 20, so IQR = 6, and 1.5 × 6 = 9. the upper fence is 20 + 9 = 29. the dot at 40 is well past that, so it's flagged as an outlier and drawn separately. that's also why the whisker stops at 26 — the whisker only reaches the last value that's still inside the fence."},
+{lv:2,t:"spr",ty:"text",q:"Find the IQR from this dot plot",a:"2.5",p:DOT_L2,note:"Q1 = 5 and Q3 = 7.5, so IQR = 2.5.",why:"list the dots out first: 4, 5, 5, 6, 6, 6, 7, 8, 12. that's 9 values, so the median is the 5th (6) and it's left out. lower half is 4, 5, 5, 6, giving q1 = (5 + 5)/2 = 5. upper half is 6, 7, 8, 12, giving q3 = (7 + 8)/2 = 7.5. IQR = 7.5 − 5 = 2.5. decimal answers are perfectly normal here."},
+{lv:2,t:"spr",ty:"mcq",q:"Is the value of 12 an outlier in this dot plot?",a:"Yes — the upper fence is 11.25",x:["No — it's only 6 above the smallest value","No — a single dot can't be an outlier","You would need the mean to decide"],p:DOT_L2,note:"Fence = 7.5 + 1.5 × 2.5 = 11.25, and 12 is past it.",why:"you have to build the fence to answer this. q3 = 7.5 and IQR = 2.5, so 1.5 × 2.5 = 3.75, and the upper fence = 7.5 + 3.75 = 11.25. since 12 is above 11.25, it counts as an outlier. it barely clears the line, which is exactly why you calculate instead of eyeballing — a tight IQR pulls the fences in close."},
+{lv:2,t:"spr",ty:"text",q:"Find the range from this dot plot",a:"9",p:DOT_L2C,note:"Largest is 30, smallest is 21, so 30 − 21 = 9.",why:"range only needs the two end values, so you don't have to sort or count anything. the leftmost dot is at 21 and the rightmost is at 30, so range = 30 − 21 = 9."},
+{lv:2,t:"spr",ty:"text",q:"Find the IQR from this dot plot",a:"4.5",p:DOT_L2C,note:"Q1 = 23 and Q3 = 27.5, so IQR = 4.5.",why:"the dots are 21, 22, 24, 25, 25, 27, 28, 30 — that's 8 values, an even amount, so the list splits straight down the middle with nothing left out. lower half is 21, 22, 24, 25, giving q1 = (22 + 24)/2 = 23. upper half is 25, 27, 28, 30, giving q3 = (27 + 28)/2 = 27.5. IQR = 27.5 − 23 = 4.5."},
+
+];
+
+var DEFAULT_DATA=[
+
+// ── LEVEL 1: Finding the median and quartiles ──
+{lv:1,t:"med",ty:"text",q:"3, 5, 7, 9, 11, 13, 15 — find the median",a:"9",note:"7 values, so the median is the 4th one.",why:"there are 7 numbers here and they're already in order, which is lucky. the median (the middle number) is the one with the same amount of numbers either side of it. count in from both ends — 3 below, 3 above — so it's the 4th number, which is 9."},
+{lv:1,t:"med",ty:"text",q:"3, 5, 7, 9, 11, 13, 15 — find Q1",a:"5",note:"Lower half is 3, 5, 7 — its middle is 5.",why:"start by finding the median (middle number), which is the 4th one, 9. now cover up the median and everything above it, so you're only looking at 3, 5, 7. quartile 1 (q1) is the middle of that little group, so it's 5. q1 is basically the median of the bottom half."},
+{lv:1,t:"med",ty:"text",q:"3, 5, 7, 9, 11, 13, 15 — find Q3",a:"13",note:"Upper half is 11, 13, 15 — its middle is 13.",why:"same idea as q1 but at the top end. the median is 9, so cover it and everything below, leaving 11, 13, 15. quartile 3 (q3) is the middle of those, so 13."},
+{lv:1,t:"med",ty:"text",q:"2, 4, 6, 8 — find the median",a:"5",note:"Even count, so average the middle two: (4 + 6)/2 = 5.",why:"there are 4 numbers, which is an even amount, so there's no single number sitting in the middle. instead you take the two middle ones — the 2nd and 3rd, which are 4 and 6 — and find the mean (average) of them: (4 + 6)/2 = 5. notice 5 isn't even in the list, and that's completely fine."},
+{lv:1,t:"med",ty:"text",q:"2, 4, 6, 8 — find Q1",a:"3",note:"Lower half is 2, 4, so (2 + 4)/2 = 3.",why:"with an even amount of numbers you just split the list down the middle: lower half is 2, 4 and upper half is 6, 8. quartile 1 is the middle of the lower half, and since there are only two numbers there, you take the mean (average) of them: (2 + 4)/2 = 3."},
+{lv:1,t:"med",ty:"text",q:"12, 7, 15, 3, 9 — find the median",a:"9",note:"Sort first: 3, 7, 9, 12, 15. The 3rd value is 9.",why:"this one is jumbled, so the very first thing to do is put it in order: 3, 7, 9, 12, 15. now there are 5 numbers, so the median (middle number) is the 3rd one, which is 9. if you skip the sorting step and just grab the middle of the original list you'd get 15, which is the trap."},
+{lv:1,t:"med",ty:"text",q:"12, 7, 15, 3, 9 — find Q3",a:"13.5",note:"Sorted, the upper half is 12, 15, so (12 + 15)/2 = 13.5.",why:"order it first: 3, 7, 9, 12, 15. the median is the 3rd number (9). because there's an odd amount, the median gets left out of both halves, so the upper half is just 12 and 15. q3 is the mean (average) of those two: (12 + 15)/2 = 13.5."},
+{lv:1,t:"med",ty:"text",q:"4, 6, 7, 9, 12, 14, 15, 18 — find the median",a:"10.5",note:"8 values, so average the 4th and 5th: (9 + 12)/2 = 10.5.",why:"8 numbers is an even amount, so no single middle one. the two in the middle are the 4th and 5th, which are 9 and 12. take the mean (average): (9 + 12)/2 = 21/2 = 10.5."},
+{lv:1,t:"med",ty:"text",q:"4, 6, 7, 9, 12, 14, 15, 18 — find Q1",a:"6.5",note:"Lower half is 4, 6, 7, 9, so (6 + 7)/2 = 6.5.",why:"with 8 numbers you split evenly into two halves of 4. the lower half is 4, 6, 7, 9. q1 is the middle of those four, and four is even again, so take the middle two — 6 and 7 — and average them: (6 + 7)/2 = 6.5."},
+{lv:1,t:"med",ty:"text",q:"4, 6, 7, 9, 12, 14, 15, 18 — find Q3",a:"14.5",note:"Upper half is 12, 14, 15, 18, so (14 + 15)/2 = 14.5.",why:"the upper half is the last four numbers: 12, 14, 15, 18. q3 is the middle of those, so take the middle two — 14 and 15 — and average them: (14 + 15)/2 = 14.5."},
+{lv:1,t:"med",ty:"text",q:"1, 3, 4, 6, 8, 9, 11, 13, 20 — find Q1",a:"3.5",note:"Lower half is 1, 3, 4, 6, so (3 + 4)/2 = 3.5.",why:"the median (middle number) is the 5th number, 8. so quartile 1 is the mean (average) between the 2nd and 3rd number: (3 + 4)/2 = 3.5. the reason you use the 2nd and 3rd is that with an odd amount of numbers the median gets left out of both halves, leaving 1, 3, 4, 6 as the lower half — four numbers, so you average the middle two."},
+{lv:1,t:"med",ty:"text",q:"1, 3, 4, 6, 8, 9, 11, 13, 20 — find Q3",a:"12",note:"Upper half is 9, 11, 13, 20, so (11 + 13)/2 = 12.",why:"the median is the 5th number (8) and it gets left out. that leaves the upper half as 9, 11, 13, 20 — four numbers, so q3 is the mean (average) of the middle two: (11 + 13)/2 = 24/2 = 12. the 20 sitting out there doesn't drag q3 up, because q3 only cares about position."},
+{lv:1,t:"med",ty:"text",q:"22, 25, 28, 30, 35 — find Q1",a:"23.5",note:"Lower half is 22, 25, so (22 + 25)/2 = 23.5.",why:"5 numbers, so the median is the 3rd one, 28. leave it out and the lower half is 22, 25. q1 is the mean (average) of those two: (22 + 25)/2 = 47/2 = 23.5."},
+{lv:1,t:"med",ty:"text",q:"2, 3, 5, 6, 8, 9, 11, 12, 14, 20 — find the median",a:"8.5",note:"10 values, so average the 5th and 6th: (8 + 9)/2 = 8.5.",why:"count them — there are 10, which is even, so no single middle number. the two in the middle are the 5th and 6th: 8 and 9. mean (average) of those: (8 + 9)/2 = 17/2 = 8.5."},
+{lv:1,t:"med",ty:"text",q:"2, 3, 5, 6, 8, 9, 11, 12, 14, 20 — find Q1",a:"5",note:"Lower half is 2, 3, 5, 6, 8 — its middle is 5.",why:"10 numbers splits evenly into two halves of 5. the lower half is 2, 3, 5, 6, 8. that's an odd amount, so this time q1 is just the middle one — the 3rd of those five — which is 5. no averaging needed."},
+{lv:1,t:"med",ty:"text",q:"10, 12, 13, 15, 16, 18, 19, 21, 22, 25, 30 — find Q3",a:"22",note:"Upper half is 19, 21, 22, 25, 30 — its middle is 22.",why:"there are 11 numbers, so the median is the 6th one (18) and it gets left out. the upper half is then 19, 21, 22, 25, 30 — five numbers, odd, so q3 is simply the middle one: 22."},
+{lv:1,t:"med",ty:"text",q:"1, 2, 4, 4, 5, 7, 8, 8, 9, 11, 13, 15 — find Q1",a:"4",note:"Lower half is 1, 2, 4, 4, 5, 7, so (4 + 4)/2 = 4.",why:"12 numbers, even, so the lower half is just the first 6: 1, 2, 4, 4, 5, 7. six is even too, so q1 is the mean (average) of the middle two of those, which are both 4: (4 + 4)/2 = 4. repeated numbers still count separately — don't collapse the two 4s into one."},
+{lv:1,t:"med",ty:"mcq",q:"Q2 is another name for which value?",a:"The median",x:["The mean","The lower quartile","The range"],note:"Q2 is the halfway cut, which is exactly the median.",why:"the quartiles chop the ordered data into 4 equal chunks. q1 is the cut a quarter of the way along, q2 is halfway, q3 is three quarters of the way. halfway is exactly what the median is, so q2 and the median are two names for the same thing. that's also why you rarely hear anyone say q2."},
+{lv:1,t:"med",ty:"mcq",q:"About what percentage of the data sits below Q1?",a:"25%",x:["50%","75%","10%"],note:"Quartile means quarter — 25% falls below Q1.",why:"the word quartile comes from quarter. q1 is the cut one quarter of the way through the ordered data, so 25% of the values sit below it and the other 75% sit above."},
+{lv:1,t:"med",ty:"mcq",q:"About what percentage of the data lies between Q1 and Q3?",a:"50%",x:["25%","75%","100%"],note:"25% sits below Q1 and 25% above Q3, leaving 50% in between.",why:"q1 has 25% of the data below it, and q3 has 25% above it. that's 25 + 25 = 50% accounted for at the two ends, so the other 50% must be sitting between them. that middle chunk is what the IQR measures, and on a box plot it's the box."},
+{lv:1,t:"med",ty:"mcq",q:"There are 9 values in order. Which position is the median?",a:"The 5th value",x:["The 4th value","Halfway between the 4th and 5th","The 4.5th value"],note:"(9 + 1)/2 = 5, so the 5th value.",why:"there's a formula for the position: (n + 1)/2, where n is how many numbers you have. here that's (9 + 1)/2 = 5, so the 5th number. because 9 is odd, the median is an actual number from the list, not an average of two."},
+{lv:1,t:"med",ty:"mcq",q:"With an odd number of values, what happens to the median when you split the data to find Q1 and Q3?",a:"It is left out of both halves",x:["It goes in the lower half","It goes in both halves","It becomes Q1"],note:"It's set aside, and each half is the values either side of it.",why:"with an odd amount there's one number sitting exactly in the middle, and it doesn't really belong to the top or the bottom. so you set it aside completely, then find q1 from the numbers below it and q3 from the numbers above it. worth knowing this is a convention, not a law — it's the one WA schools use, and some textbooks and calculators do it differently."},
+{lv:1,t:"med",ty:"mcq",q:"What must you always do before finding quartiles?",a:"Put the values in order, smallest to largest",x:["Add them all up","Remove any repeated values","Round them to whole numbers"],note:"Order first — quartiles are about position.",why:"every quartile instruction is about position: the middle number, the middle of the lower half. if the list is jumbled then counting to a position just lands you on a random number. so sorting smallest to largest is always step one, before anything else. and don't delete repeats while you're at it — they're real values and they count."},
+
+// ── LEVEL 2: Range, IQR and outliers ──
+{lv:2,t:"spr",ty:"text",q:"Q1 = 5 and Q3 = 13. What is the IQR?",a:"8",note:"IQR = Q3 − Q1 = 13 − 5 = 8.",why:"IQR stands for interquartile range, which literally means the range between the quartiles. so you just subtract the smaller from the bigger: 13 − 5 = 8."},
+{lv:2,t:"spr",ty:"text",q:"3, 5, 7, 9, 11, 13, 15 — what is the range?",a:"12",note:"Range = 15 − 3 = 12.",why:"range means biggest minus smallest. the biggest here is 15 and the smallest is 3, so 15 − 3 = 12. the range only ever uses the two end values — everything in between is ignored."},
+{lv:2,t:"spr",ty:"text",q:"4, 6, 7, 9, 12, 14, 15, 18 — what is the IQR?",a:"8",note:"Q1 = 6.5 and Q3 = 14.5, so IQR = 8.",why:"you need both quartiles before you can do anything. 8 numbers splits into halves of 4. lower half 4, 6, 7, 9 gives q1 = (6 + 7)/2 = 6.5. upper half 12, 14, 15, 18 gives q3 = (14 + 15)/2 = 14.5. then IQR = 14.5 − 6.5 = 8."},
+{lv:2,t:"spr",ty:"text",q:"Q1 = 5, Q3 = 13. What is the upper fence (Q3 + 1.5 × IQR)?",a:"25",note:"IQR = 8, so 13 + 1.5 × 8 = 13 + 12 = 25.",why:"the fence is the line you draw to decide whether something counts as an outlier. work it out in stages. first the IQR: 13 − 5 = 8. then 1.5 times that: 1.5 × 8 = 12. then add it onto q3: 13 + 12 = 25. anything above 25 is an outlier."},
+{lv:2,t:"spr",ty:"text",q:"Q1 = 5, Q3 = 13. What is the lower fence (Q1 − 1.5 × IQR)?",a:"-7",note:"IQR = 8, so 5 − 12 = −7.",why:"same steps as the upper fence but you subtract instead. IQR = 13 − 5 = 8, then 1.5 × 8 = 12, then take that off q1: 5 − 12 = −7. a negative answer looks odd but it's fine — it just means nothing at the low end could possibly be small enough to count as an outlier here."},
+{lv:2,t:"spr",ty:"text",q:"Q1 = 20, Q3 = 32. What is the lower fence?",a:"2",note:"IQR = 12, so 20 − 18 = 2.",why:"IQR first: 32 − 20 = 12. then 1.5 × 12 = 18. then lower fence = q1 − 18 = 20 − 18 = 2. so any value below 2 would be an outlier."},
+{lv:2,t:"spr",ty:"text",q:"4, 6, 7, 8, 9, 10, 11, 12, 30 — what is the IQR?",a:"5",note:"Q1 = 6.5 and Q3 = 11.5, so IQR = 5.",why:"9 numbers, so the median is the 5th (9) and it's left out. lower half 4, 6, 7, 8 gives q1 = (6 + 7)/2 = 6.5. upper half 10, 11, 12, 30 gives q3 = (11 + 12)/2 = 11.5. IQR = 11.5 − 6.5 = 5. notice the 30 is in the upper half but barely affects q3, because q3 depends on position rather than size."},
+{lv:2,t:"spr",ty:"mcq",q:"4, 6, 7, 8, 9, 10, 11, 12, 30 — is 30 an outlier?",a:"Yes — the upper fence is 19",x:["No — it's the largest value, so it can't be","No — 30 is less than double the median","You can't tell without the mean"],note:"Fence = 11.5 + 7.5 = 19, and 30 is above it.",why:"you can't judge this by eye, you have to build the fence. q3 = 11.5 and IQR = 5, so 1.5 × 5 = 7.5, and the upper fence = 11.5 + 7.5 = 19. since 30 is bigger than 19, it's an outlier. and being the largest value doesn't make something an outlier by itself — every data set has a largest value, and usually it's perfectly normal."},
+{lv:2,t:"spr",ty:"text",q:"12, 14, 15, 15, 16, 18, 19, 20, 45 — what is the IQR?",a:"5",note:"Q1 = 14.5 and Q3 = 19.5, so IQR = 5.",why:"9 numbers, median is the 5th (16), left out. lower half 12, 14, 15, 15 gives q1 = (14 + 15)/2 = 14.5. upper half 18, 19, 20, 45 gives q3 = (19 + 20)/2 = 19.5. IQR = 19.5 − 14.5 = 5."},
+{lv:2,t:"spr",ty:"mcq",q:"12, 14, 15, 15, 16, 18, 19, 20, 45 — is 45 an outlier?",a:"Yes — it sits above the upper fence of 27",x:["No — the fence is 45","Yes — because it's more than double the median","No — outliers must be below the lower fence"],note:"Fence = 19.5 + 7.5 = 27, and 45 is well past it.",why:"q3 = 19.5 and IQR = 5, so 1.5 × 5 = 7.5 and the upper fence = 19.5 + 7.5 = 27. 45 is well beyond that, so yes. and outliers can be at either end — low values below the lower fence count too."},
+{lv:2,t:"spr",ty:"text",q:"Five-number summary: 3, 8, 12, 17, 25. What is the IQR?",a:"9",note:"Q1 = 8 and Q3 = 17, so IQR = 9.",why:"a five-number summary is always written in the same order: minimum, q1, median, q3, maximum. so reading across, q1 is the 2nd number (8) and q3 is the 4th (17). IQR = 17 − 8 = 9. the median in the middle isn't used for this at all."},
+{lv:2,t:"spr",ty:"text",q:"Five-number summary: 3, 8, 12, 17, 25. What is the range?",a:"22",note:"Range = 25 − 3 = 22.",why:"the first and last numbers of a five-number summary are the minimum and maximum, so range = 25 − 3 = 22. compare that to the IQR of 9 — the range is always the bigger of the two, because it covers all the data instead of just the middle half."},
+{lv:2,t:"spr",ty:"text",q:"21, 23, 24, 26, 28, 29, 31, 60 — what is the IQR?",a:"6.5",note:"Q1 = 23.5 and Q3 = 30, so IQR = 6.5.",why:"8 numbers, so split evenly into halves of 4. lower half 21, 23, 24, 26 gives q1 = (23 + 24)/2 = 23.5. upper half 28, 29, 31, 60 gives q3 = (29 + 31)/2 = 30. IQR = 30 − 23.5 = 6.5."},
+{lv:2,t:"spr",ty:"mcq",q:"21, 23, 24, 26, 28, 29, 31, 60 — what is the upper fence?",a:"39.75",x:["36.5","45","60"],note:"1.5 × 6.5 = 9.75, so 30 + 9.75 = 39.75.",why:"IQR = 6.5, so 1.5 × 6.5 = 9.75. then the fence is q3 + 9.75 = 30 + 9.75 = 39.75. messy decimals are normal here, so don't round them off before you compare — just carry them through. and since 60 is above 39.75, it's an outlier."},
+{lv:2,t:"spr",ty:"mcq",q:"Which measure of spread is barely affected by one extreme value?",a:"The IQR",x:["The range","The maximum","The mean"],note:"The IQR uses Q1 and Q3, which sit inside the data.",why:"the range is worked out from the smallest and largest values, so one extreme number changes it straight away. the IQR is worked out from q1 and q3, which sit well inside the data, so a weird value out at the edge barely moves them. that resistance to outliers is the whole reason the IQR gets used."},
+{lv:2,t:"spr",ty:"mcq",q:"A very high value is added to a data set. The range jumps a lot but the IQR hardly changes. Why?",a:"The range uses only the extremes; the IQR uses the middle 50%",x:["The IQR ignores the largest half of the data","The range is calculated from the mean","The IQR always stays the same"],note:"The range is built from the two end values; the IQR isn't.",why:"adding one huge value pushes the maximum way up, and since range = max − min, the range jumps immediately. but q1 and q3 are positions inside the ordered list, so adding one number shifts them along by a fraction of a place and the IQR stays roughly where it was. the IQR isn't fixed though — it can change, just not dramatically."},
+{lv:2,t:"spr",ty:"mcq",q:"What does the IQR actually measure?",a:"The spread of the middle 50% of the data",x:["The spread of all the data","The difference between the mean and the median","How far the largest value is from the smallest"],note:"It's the width of the middle 50% — the box on a box plot.",why:"q1 has 25% of the data below it, and q3 has 75% below it. so the gap between q1 and q3 holds the middle 50% of everything. the IQR is the width of that gap, which on a box plot is literally the width of the box."},
+
+// ── LEVEL 3: Reading box plots ──
+{lv:3,t:"read",ty:"text",q:"What is the median?",a:"30",p:PLOT_A,note:"The line inside the box marks the median — it reads 30.",why:"on a box plot the median is the line drawn inside the box, not one of the box edges. find that line, follow it straight down to the scale underneath, and read the number: 30. the box edges are the quartiles, which is a different thing."},
+{lv:3,t:"read",ty:"text",q:"What is the IQR?",a:"25",p:PLOT_A,note:"Box runs from 20 to 45, so 45 − 20 = 25.",why:"the box is drawn from q1 to q3, so its left edge is q1 and its right edge is q3. read them off: 20 and 45. IQR = q3 − q1 = 45 − 20 = 25. so the IQR is just the width of the box — you can almost measure it with a ruler."},
+{lv:3,t:"read",ty:"text",q:"What is the range?",a:"60",p:PLOT_A,note:"Whisker tip to whisker tip: 70 − 10 = 60.",why:"range is maximum minus minimum, and on a box plot those are the two whisker tips, not the box edges. the left tip is at 10 and the right tip is at 70, so range = 70 − 10 = 60. if you used the box edges you'd have found the IQR instead."},
+{lv:3,t:"read",ty:"mcq",q:"About what percentage of the values are above Q3?",a:"25%",x:["50%","75%","15%"],p:PLOT_A,note:"Q3 is the three-quarter mark, so 25% sits above it.",why:"q3 is the cut three quarters of the way through the data, so a quarter of the values sit above it. that quarter is what the right whisker represents. and a long whisker doesn't mean more values live there — it's always 25%, just spread over a wider range."},
+{lv:3,t:"read",ty:"mcq",q:"Which quarter of the data is the most spread out?",a:"From Q3 (45) up to the maximum (70)",x:["From the minimum (10) to Q1 (20)","From Q1 (20) to the median (30)","From the median (30) to Q3 (45)"],p:PLOT_A,note:"That section is 25 wide, the longest of the four.",why:"a box plot splits into four sections and each one holds about 25% of the values. so measure each section's width: 10 to 20 is 10 wide, 20 to 30 is 10, 30 to 45 is 15, and 45 to 70 is 25. the widest section holds the same number of values stretched over the biggest range, which is what spread out means."},
+{lv:3,t:"read",ty:"text",q:"What was the largest value recorded?",a:"20",p:PLOT_B,note:"The tip of the right whisker is at 20.",why:"the maximum is the very end of the right whisker, not the right edge of the box. the box edge is q3, which is 14 here. the whisker keeps going past it out to 20, and that's the largest value."},
+{lv:3,t:"read",ty:"mcq",q:"About what fraction of the values lie between 5 and 14?",a:"About half",x:["About a quarter","About three quarters","All of them"],p:PLOT_B,note:"5 is Q1 and 14 is Q3, so that span is the box — the middle 50%.",why:"check what 5 and 14 actually are on this plot: they're the two edges of the box, so they're q1 and q3. the box always holds the middle 50% of the data, so about half the values sit in that span."},
+{lv:3,t:"read",ty:"mcq",q:"How would you describe the shape of this distribution?",a:"Positively skewed — it has a long tail to the right",x:["Negatively skewed — long tail to the left","Symmetric","Impossible to tell from a box plot"],p:PLOT_C,note:"Median sits near Q1 and the right whisker is long.",why:"two things to look at. first, where's the median line inside the box? it's close to the left edge, so the lower values are squashed into a small range. second, how do the whiskers compare? the right one is much longer. put together, that means most values sit low with a few trailing off high — which is called positively skewed, or skewed right. the direction is named after the tail, not the bunch."},
+{lv:3,t:"read",ty:"mcq",q:"What does the separate dot on the right represent?",a:"An outlier — a value beyond the upper fence",x:["The mean of the data","A mistake in the plot","The largest value inside the box"],p:PLOT_D,note:"The whisker stops at the last non-outlier; the dot is beyond the fence.",why:"when a plot shows outliers, the whisker stops at the last value that's still inside the fences, and anything past that gets drawn as its own dot. so here the whisker ending at 40 is the largest normal value, and the dot at 62 is the unusual one. it's still a real data point, not an error — just far enough out to be flagged."},
+{lv:3,t:"read",ty:"mcq",q:"60 students sat this test. About how many scored above the median?",a:"About 30",x:["About 15","About 45","You can't tell"],p:PLOT_A,note:"The median splits the group in half, so about 30.",why:"the median splits the group into two equal halves by count — that's its definition. it doesn't matter how the numbers are spread or how lopsided the plot looks. half of 60 is 30."},
+{lv:3,t:"read",ty:"mcq",q:"Can a box plot tell you exactly how many values sit in each quarter?",a:"No — only that each quarter holds about 25% of them",x:["Yes — count the tick marks","Yes — the box height shows the count","Only if the data is symmetric"],p:PLOT_B,note:"A box plot shows position, not frequency.",why:"a box plot has already squashed the whole data set down to five numbers, so the individual values simply aren't there any more. it tells you where the quarters sit on the scale, not how many values there were. the height of the box means nothing at all — it's just drawing. for counts you'd need a dot plot, stem plot or histogram."},
+
+// ── LEVEL 4: Matching plots to data ──
+{lv:4,t:"match",ty:"mcq",q:"Which box plot matches the data set 4, 7, 9, 9, 12, 15, 20?",a:"A",x:["B","C","D"],p:PLOT_MATCH,note:"Summary is 4, 7, 9, 15, 20 — only A has all five.",why:"work out the five numbers yourself before you look at the plots, otherwise you'll talk yourself into whichever one looks about right. 7 values, so the median is the 4th, which is 9. lower half is 4, 7, 9, so q1 = 7. upper half is 12, 15, 20, so q3 = 15. min is 4 and max is 20. now check each plot against those five: only A has the box running 7 to 15 with the median line sitting at 9."},
+{lv:4,t:"match",ty:"text",q:"Find the median from the dot plot",a:"8",p:PLOT_DOT1,note:"Ten dots, so average the 5th and 6th — both 8.",why:"every dot is one value, so write them out as a list first: 6, 6, 7, 8, 8, 8, 9, 10, 12, 14. that's 10 values, which is even, so average the 5th and 6th. both of those are 8, so (8 + 8)/2 = 8. the mistake to avoid is counting stacks instead of dots — a stack of three is three values, not one."},
+{lv:4,t:"match",ty:"text",q:"Find Q1 from the dot plot",a:"7",p:PLOT_DOT1,note:"Lower half is 6, 6, 7, 8, 8 — its middle is 7.",why:"the full list is 6, 6, 7, 8, 8, 8, 9, 10, 12, 14. ten values splits evenly, so the lower half is the first five: 6, 6, 7, 8, 8. five is odd, so q1 is just the middle one of those — the 3rd — which is 7."},
+{lv:4,t:"match",ty:"text",q:"Find Q3 from the dot plot",a:"10",p:PLOT_DOT1,note:"Upper half is 8, 9, 10, 12, 14 — its middle is 10.",why:"the upper half is the last five values: 8, 9, 10, 12, 14. odd amount again, so q3 is the middle one, which is 10. note one of the three 8s ends up in the lower half and one in the upper — that's fine, they're separate values."},
+{lv:4,t:"match",ty:"text",q:"Find the IQR from this dot plot",a:"2",p:PLOT_DOT2,note:"Q1 = 3 and Q3 = 5, so IQR = 2.",why:"list the dots out: 2, 3, 3, 4, 4, 4, 5, 5, 6, 9. ten values, so lower half is 2, 3, 3, 4, 4 giving q1 = 3, and upper half is 4, 5, 5, 6, 9 giving q3 = 5. then IQR = 5 − 3 = 2."},
+{lv:4,t:"match",ty:"mcq",q:"Is the value of 9 an outlier in this dot plot?",a:"Yes — the upper fence is 8",x:["No — it's only 3 above the median","No — outliers must be much further away","You need the mean to decide"],p:PLOT_DOT2,note:"Fence = 5 + 1.5 × 2 = 8, and 9 is past it.",why:"q3 = 5 and IQR = 2, so 1.5 × 2 = 3 and the upper fence = 5 + 3 = 8. since 9 is above 8, it counts as an outlier — even though it doesn't look dramatic on the page. that's the point worth remembering: when the IQR is small the fences sit close in, so it doesn't take much distance to be flagged. always calculate rather than eyeball it."},
+{lv:4,t:"match",ty:"mcq",q:"Which data set could this box plot have come from?",a:"31, 33, 34, 36, 38, 39, 41, 42",x:["31, 32, 33, 35, 37, 40, 41, 42","33, 34, 36, 37, 38, 40, 41, 42","31, 33, 34, 36, 38, 39, 41, 48"],p:PLOT_SINGLE,note:"Plot runs 31 to 42 with a median of 37.",why:"start with whatever is easiest to read off, which is the whisker tips. this plot starts at 31 and ends at 42, so any list that doesn't start at 31 or doesn't end at 42 is out straight away — that kills two options without any real work. then separate the last two using the median: 8 values, so it's the average of the 4th and 5th, (36 + 38)/2 = 37, which matches the line on the plot."},
+{lv:4,t:"match",ty:"mcq",q:"A box plot has its median line close to Q1 and a long right whisker. What does that tell you?",a:"Most values are low, with a few stretching out high",x:["Most values are high, with a few low ones","The values are evenly spread","There must be an error in the data"],note:"The box is where data is packed; a long whisker is thin spread.",why:"think about what each part holds. the box holds the middle 50%, so a narrow box means those values are crowded together. if the median line also sits near the left edge, the lower values are crowded even tighter. a long right whisker still only holds 25% of the values, but stretched across a big range — so just a few high ones spread thinly. that's the shape of a positively skewed set."},
+{lv:4,t:"match",ty:"mcq",q:"Two box plots look identical. What can you be sure is the same about the two data sets?",a:"Their five-number summaries",x:["The number of values in each","Every individual value","Their means"],note:"A box plot is drawn from exactly five numbers, nothing else.",why:"a box plot is built from five numbers and nothing more: min, q1, median, q3, max. everything else about the data is invisible once it's drawn — how many values there were, what the mean was, whether there were gaps or clumps inside the box. so two completely different sets, even different sizes, can produce exactly the same picture."},
+{lv:4,t:"match",ty:"mcq",q:"Why does a dot plot let you find the median when a box plot can't be used to count values?",a:"A dot plot shows every individual value",x:["A dot plot is always sorted","Box plots are less accurate","Dot plots always have fewer values"],note:"Every dot is one value, so you can count positions directly.",why:"a dot plot keeps every single data point as its own dot, so you can count along and land on whatever position you need. a box plot has already been summarised down to five numbers, so those individual values are gone for good. neither is more accurate — they just carry different amounts of information."},
+
+// ── LEVEL 5: Comparing two data sets ──
+{lv:5,t:"comp",ty:"mcq",q:"Which class has the higher median?",a:"Class B, at 64 compared with 62",x:["Class A, at 62 compared with 64","They are the same","You can't compare medians across two plots"],p:PLOT_CLASS,note:"B's median line reads 64; A's reads 62.",why:"the median is the line inside each box, so find both and read them down to the scale. class A's sits at 62 and class B's sits at 64, so B is higher. but it's only 2 marks, so slightly higher is the honest way to put it — overstating a small gap costs marks in the written part."},
+{lv:5,t:"comp",ty:"text",q:"What is the IQR for Class A?",a:"15",p:PLOT_CLASS,note:"Class A's box runs 55 to 70, so 70 − 55 = 15.",why:"the IQR is the width of the box. for class A the left edge (q1) is at 55 and the right edge (q3) is at 70, so IQR = 70 − 55 = 15. use the box edges, not the whisker tips — those would give you the range instead."},
+{lv:5,t:"comp",ty:"text",q:"What is the IQR for Class B?",a:"8",p:PLOT_CLASS,note:"Class B's box runs 60 to 68, so 68 − 60 = 8.",why:"class B's box goes from q1 = 60 to q3 = 68, so IQR = 68 − 60 = 8. that's a visibly narrower box than class A's, and the number confirms what your eye already told you."},
+{lv:5,t:"comp",ty:"mcq",q:"Which class had the more consistent results?",a:"Class B — its IQR of 8 is smaller than Class A's 15",x:["Class A — it reached a higher maximum","Class A — its box sits further right","Neither, since the medians are close"],p:PLOT_CLASS,note:"Consistent means less spread — compare IQRs, not centres.",why:"consistent means the results are bunched together rather than scattered, so this is a question about spread, not about who scored higher. compare the IQRs: class B's is 8 and class A's is 15. class B's middle 50% fit into a much narrower band of marks, so their results are more consistent. a higher maximum tells you nothing about consistency."},
+{lv:5,t:"comp",ty:"mcq",q:"Class A has the higher maximum. Does that make Class A the stronger class overall?",a:"No — one value doesn't describe a whole group",x:["Yes — the top mark is what matters","Yes — a higher maximum means a higher median","Only if the ranges are equal"],p:PLOT_CLASS,note:"The maximum is one student, not the group.",why:"the maximum is a single person's result. a class of thirty isn't described by its best student any more than a cricket team is described by its highest score. when you compare groups you use the centre (the median) and the spread (the IQR), because those describe everyone. here class B actually has the higher median and the tighter spread."},
+{lv:5,t:"comp",ty:"mcq",q:"Which is the best written comparison of these two classes?",a:"Class B had a slightly higher median (64 vs 62) and was more consistent, with an IQR of 8 compared with 15",x:["Class B was better than Class A","Class A had a maximum of 85 and Class B had a maximum of 78","Class A's box is wider than Class B's box"],p:PLOT_CLASS,note:"Centre, spread, actual numbers, and what it means.",why:"markers are looking for three things in a comparison: the centre, the spread, and real numbers to back both up. class B was better has none of those and says nothing. comparing maximums compares one student from each class. saying one box is wider describes the picture rather than the data. the right answer names both medians, names both IQRs, quotes the figures and says what they mean."},
+{lv:5,t:"comp",ty:"mcq",q:"These two teams have the same median. What is the main difference?",a:"Team Y's scores are far more consistent",x:["Team Y scored higher overall","Team X scored higher overall","There is no real difference"],p:PLOT_TEAM,note:"Same centre, very different spread: IQR 6 vs 2.",why:"both median lines sit at 8, so a typical score is the same for both teams. the difference is spread. team X's box runs from 5 to 11, so its IQR is 6. team Y's runs from 7 to 9, so its IQR is 2. same typical score, but team Y turns in much the same performance every time while team X is all over the place."},
+{lv:5,t:"comp",ty:"text",q:"What is the IQR for Team X?",a:"6",p:PLOT_TEAM,note:"Box runs 5 to 11, so 11 − 5 = 6.",why:"team X is the upper plot. its box goes from q1 = 5 to q3 = 11, so IQR = 11 − 5 = 6. the whiskers reach out to 2 and 20, but those give you the range, not the IQR."},
+{lv:5,t:"comp",ty:"mcq",q:"When comparing two data sets, why is the IQR usually more useful than the range?",a:"The range can be stretched by a single unusual value",x:["The IQR is always larger","The range is harder to calculate","The IQR includes every value"],note:"The range is decided by the two extremes; the IQR isn't.",why:"the range is max − min, so it's decided entirely by the two most extreme people in each group. one unusual result can make a group look far more variable than it really is. the IQR describes the middle 50%, so it reflects what the bulk of the group did. and the IQR is always smaller than the range, never larger, since it covers less of the data."},
+{lv:5,t:"comp",ty:"text",q:"From the stem plot, what is the median for the boys?",a:"59",p:PLOT_STEM,note:"Boys' list gives (57 + 61)/2 = 59.",why:"read the boys' leaves outwards from the stem, so the left side runs backwards — the 4 row gives 45 and 48. the full list is 45, 48, 52, 55, 57, 61, 63, 68, 70, 74. that's 10 values, which is even, so average the 5th and 6th: (57 + 61)/2 = 118/2 = 59."},
+{lv:5,t:"comp",ty:"text",q:"From the stem plot, what is the median for the girls?",a:"57",p:PLOT_STEM,note:"Girls' list gives (56 + 58)/2 = 57.",why:"the girls' side reads normally, left to right. the full list is 42, 46, 51, 54, 56, 58, 60, 62, 65, 66. 10 values, so average the 5th and 6th: (56 + 58)/2 = 114/2 = 57."},
+{lv:5,t:"comp",ty:"mcq",q:"From the stem plot, which group's marks were more spread out?",a:"The boys — their IQR is 16 compared with 11",x:["The girls — their IQR is larger","They are identical","You can't find spread from a stem plot"],p:PLOT_STEM,note:"Boys' IQR is 16; girls' is 11.",why:"a stem plot shows every individual value, so you can work out the whole five-number summary from it. boys: lower half 45, 48, 52, 55, 57 gives q1 = 52, upper half 61, 63, 68, 70, 74 gives q3 = 68, so IQR = 16. girls: q1 = 51 and q3 = 62, so IQR = 11. bigger IQR means more spread out, so the boys."},
+{lv:5,t:"comp",ty:"mcq",q:"Two data sets have the same median but very different IQRs. What can you say?",a:"The typical values are similar, but one set is much more varied",x:["The sets are effectively identical","One set must contain an error","The one with the larger IQR has a higher median"],note:"Centre and spread answer two different questions.",why:"the median answers what's typical and the IQR answers how much they vary, and they're independent of each other. same median means a typical value from each set is about the same. very different IQRs mean one set is tightly bunched and the other is scattered. if you only reported the median you'd be hiding the real difference, which is why you always report both."},
+{lv:5,t:"comp",ty:"mcq",q:"A comparison answer scores full marks when it does what?",a:"Compares centre and spread, quotes figures, and says what it means in context",x:["States which set is bigger","Lists both five-number summaries in full","Names the outliers in each set"],note:"Centre with numbers, spread with numbers, then what it means.",why:"the pattern for nearly every comparison question is the same: one sentence about the centre with the actual numbers in it, one about the spread with the numbers, and a phrase saying what that means for the real situation. writing out both five-number summaries isn't a comparison — it's just data with no conclusion attached, and it won't get the marks."},
+
+];
+
+DEFAULT_DATA=DEFAULT_DATA.concat(EXTRA_DATA);
+
+var DATA=DEFAULT_DATA.map(function(d){return clone(d);});
+function clone(o){return JSON.parse(JSON.stringify(o));}
+
+var currentLevel=1,MAX_LEVEL=5;
+var deck=[],weak=[],cur=null,answered=false;
+var C=0,W=0,streak=0,lvXP=0;
+var totalC=0,totalW=0,totalXP=0;
+
+function shuf(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+
+/* ── Plot rendering ── */
+var CBOX="#0D9488",CBOX2="#B45309",CINK="#333";
+
+function niceNum(v){return Math.round(v*100)/100;}
+
+function svgBox(p){
+  var s=p.s,n=s.length;
+  var named=false;
+  for(var i=0;i<n;i++){if(s[i].n)named=true;}
+  var W=440,padR=16;
+  var plotL=named?58:14,plotR=W-padR,plotW=plotR-plotL;
+  var top=10,rowH=n>1?56:62,boxH=n>1?26:30;
+  var axisY=top+n*rowH+6;
+  var H=axisY+30;
+  function X(v){return plotL+(v-p.lo)/(p.hi-p.lo)*plotW;}
+  var o='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" role="img">';
+  // gridlines
+  var steps=Math.round((p.hi-p.lo)/p.step);
+  for(var t=0;t<=steps;t++){
+    var v=p.lo+t*p.step,x=X(v);
+    o+='<line x1="'+x+'" y1="'+top+'" x2="'+x+'" y2="'+axisY+'" stroke="#e8e8e8" stroke-width="1"/>';
+  }
+  // axis
+  o+='<line x1="'+plotL+'" y1="'+axisY+'" x2="'+plotR+'" y2="'+axisY+'" stroke="#666" stroke-width="1.5"/>';
+  for(t=0;t<=steps;t++){
+    v=p.lo+t*p.step;x=X(v);
+    o+='<line x1="'+x+'" y1="'+axisY+'" x2="'+x+'" y2="'+(axisY+5)+'" stroke="#666" stroke-width="1.5"/>';
+    o+='<text x="'+x+'" y="'+(axisY+19)+'" text-anchor="middle" font-size="11" fill="#777" font-family="system-ui,sans-serif">'+niceNum(v)+'</text>';
+  }
+  // boxes
+  for(i=0;i<n;i++){
+    var d=s[i],cy=top+i*rowH+rowH/2,col=(n===2&&i===1?CBOX2:CBOX);
+    var y0=cy-boxH/2,y1=cy+boxH/2;
+    if(d.n){
+      o+='<text x="'+(plotL-8)+'" y="'+(cy+4)+'" text-anchor="end" font-size="12" font-weight="700" fill="'+col+'" font-family="system-ui,sans-serif">'+esc(d.n)+'</text>';
+    }
+    // whiskers
+    o+='<line x1="'+X(d.min)+'" y1="'+cy+'" x2="'+X(d.q1)+'" y2="'+cy+'" stroke="'+col+'" stroke-width="2"/>';
+    o+='<line x1="'+X(d.q3)+'" y1="'+cy+'" x2="'+X(d.max)+'" y2="'+cy+'" stroke="'+col+'" stroke-width="2"/>';
+    o+='<line x1="'+X(d.min)+'" y1="'+(cy-9)+'" x2="'+X(d.min)+'" y2="'+(cy+9)+'" stroke="'+col+'" stroke-width="2.5"/>';
+    o+='<line x1="'+X(d.max)+'" y1="'+(cy-9)+'" x2="'+X(d.max)+'" y2="'+(cy+9)+'" stroke="'+col+'" stroke-width="2.5"/>';
+    // box
+    o+='<rect x="'+X(d.q1)+'" y="'+y0+'" width="'+(X(d.q3)-X(d.q1))+'" height="'+boxH+'" fill="'+col+'" fill-opacity="0.14" stroke="'+col+'" stroke-width="2" rx="2"/>';
+    // median
+    o+='<line x1="'+X(d.med)+'" y1="'+y0+'" x2="'+X(d.med)+'" y2="'+y1+'" stroke="'+col+'" stroke-width="3.5"/>';
+    // outliers
+    if(d.out){for(var k=0;k<d.out.length;k++){
+      o+='<circle cx="'+X(d.out[k])+'" cy="'+cy+'" r="4.5" fill="#fff" stroke="'+col+'" stroke-width="2"/>';
+    }}
+  }
+  return o+'</svg>';
+}
+
+function svgDot(p){
+  var counts={},maxc=0,i;
+  for(i=0;i<p.v.length;i++){counts[p.v[i]]=(counts[p.v[i]]||0)+1;if(counts[p.v[i]]>maxc)maxc=counts[p.v[i]];}
+  var W=440,padL=18,padR=18,plotW=W-padL-padR;
+  var gap=15,r=5,baseGap=14;
+  var H=20+maxc*gap+baseGap+28;
+  var axisY=20+maxc*gap+baseGap;
+  var span=p.hi-p.lo;
+  function X(v){return padL+(v-p.lo)/span*plotW;}
+  var o='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" role="img">';
+  o+='<line x1="'+padL+'" y1="'+axisY+'" x2="'+(W-padR)+'" y2="'+axisY+'" stroke="#666" stroke-width="1.5"/>';
+  for(var v=p.lo;v<=p.hi;v++){
+    var x=X(v);
+    o+='<line x1="'+x+'" y1="'+axisY+'" x2="'+x+'" y2="'+(axisY+5)+'" stroke="#666" stroke-width="1.5"/>';
+    o+='<text x="'+x+'" y="'+(axisY+19)+'" text-anchor="middle" font-size="11" fill="#777" font-family="system-ui,sans-serif">'+v+'</text>';
+    var c=counts[v]||0;
+    for(i=0;i<c;i++){
+      o+='<circle cx="'+x+'" cy="'+(axisY-baseGap-i*gap)+'" r="'+r+'" fill="'+CBOX+'" fill-opacity="0.75" stroke="'+CBOX+'" stroke-width="1.5"/>';
+    }
+  }
+  return o+'</svg>';
+}
+
+function htmlStem(p){
+  var o='<div class="stem-wrap"><table class="stem"><tr><th style="text-align:right">'+esc(p.left)+'</th><th></th><th style="text-align:left">'+esc(p.right)+'</th></tr>';
+  for(var i=0;i<p.rows.length;i++){
+    var r=p.rows[i];
+    o+='<tr><td class="sl">'+esc(r[1]||"")+'</td><td class="sm">'+esc(String(r[0]))+'</td><td class="sr">'+esc(r[2]||"")+'</td></tr>';
+  }
+  o+='</table><div class="stem-key">Key: '+esc(p.key)+'. Left-hand leaves read outwards from the stem.</div></div>';
+  return o;
+}
+
+function renderPlot(p){
+  if(!p)return"";
+  try{
+    if(p.k==="box")return svgBox(p);
+    if(p.k==="dot")return svgDot(p);
+    if(p.k==="stem")return htmlStem(p);
+  }catch(e){return'<div style="padding:10px;font-size:12px;color:#c0392b">Plot could not be drawn.</div>';}
+  return"";
+}
+
+/* ── Quiz flow ── */
+// make sure a figure appears within the first few cards, so levels that mix
+// list questions and plots never open with a long run of plain arithmetic
+function seedFigureEarly(d){
+  var first=-1;
+  for(var i=0;i<d.length;i++){if(d[i].p){first=i;break;}}
+  if(first<2)return;
+  var target=1+Math.floor(Math.random()*2);
+  var card=d.splice(first,1)[0];
+  d.splice(target,0,card);
+}
+
+function cardsForLevel(lv){return DATA.filter(function(d){return d.lv===lv;});}
+
+function startLevel(lv){
+  currentLevel=lv;deck=shuf(cardsForLevel(lv).slice());weak=[];
+  seedFigureEarly(deck);
+  C=0;W=0;streak=0;lvXP=0;
+  hideAll();
+  document.getElementById("qhead").style.display="block";
+  document.getElementById("frow").style.display="flex";
+  document.getElementById("stats").style.display="flex";
+  document.getElementById("retry-bar").style.display="none";
+  updateBar();updateStats();next();
+}
+
+function hideAll(){
+  ["qhead","fig","grid","finput","frow","stats","level-summary","done"].forEach(function(id){
+    document.getElementById(id).style.display="none";
+  });
+}
+
+function next(){
+  answered=false;
+  document.getElementById("nxt").style.display="none";
+  document.getElementById("fb").textContent="";
+  document.getElementById("fb").className="";
+  var fn0=document.getElementById("fnote");fn0.style.display="none";fn0.className="";
+  document.getElementById("frow").className="";
+  if(!deck.length&&!weak.length){showLevelSummary();return;}
+  if(!deck.length){deck=shuf(weak.slice());weak=[];document.getElementById("retry-bar").style.display="block";}
+  cur=deck.shift();updateProg();
+
+  var bmap={med:"bmed quartiles",spr:"bspr spread",read:"bread box plots",match:"bmatch matching",comp:"bcomp comparing"};
+  var bp=(bmap[cur.t]||"bmed quartiles").split(" ");
+  var badge=document.getElementById("badge");
+  badge.className=bp[0];badge.textContent=bp.slice(1).join(" ");
+
+  document.getElementById("qtext").textContent=cur.q;
+  var sub={med:"Give your answer as a number",spr:"Give your answer as a number",read:"Read the values off the plot",match:"Look carefully at the figure",comp:"Compare the two groups"};
+  document.getElementById("qsub").textContent=cur.ty==="text"?(sub[cur.t]||""):"Choose the correct answer:";
+  document.getElementById("qhead").style.display="block";
+  document.getElementById("frow").style.display="flex";
+  document.getElementById("stats").style.display="flex";
+
+  var fig=document.getElementById("fig");
+  if(cur.p){fig.innerHTML=renderPlot(cur.p);fig.style.display="block";}
+  else{fig.innerHTML="";fig.style.display="none";}
+
+  if(cur.ty==="text"){
+    document.getElementById("grid").style.display="none";
+    document.getElementById("finput").style.display="flex";
+    var fi=document.getElementById("fanswer");
+    fi.value="";fi.className="";fi.disabled=false;
+    document.getElementById("fcheck").disabled=false;
+  } else {
+    document.getElementById("grid").style.display="grid";
+    document.getElementById("finput").style.display="none";
+    var opts=shuf([cur.a,cur.x[0],cur.x[1],cur.x[2]]);
+    for(var i=0;i<4;i++){
+      var el=document.getElementById("o"+i);
+      el.className="opt";
+      el.querySelector(".txt").textContent=opts[i]||"";
+      el.dataset.val=opts[i]||"";
+    }
+    bindOpts(cur.a);
+  }
+}
+
+function showNote(ok){
+  var fn=document.getElementById("fnote");
+  var txt=ok?(cur.note||cur.why||""):(cur.why||cur.note||"");
+  if(txt&&txt.trim()){
+    fn.textContent=txt;
+    fn.className=ok?"":"walk";
+    fn.style.display="block";
+    document.getElementById("frow").className=ok?"":"wide";
+  }
+}
+
+function bindOpts(correct){
+  for(var i=0;i<4;i++){
+    (function(el){
+      var newEl=el.cloneNode(true);
+      el.parentNode.replaceChild(newEl,el);
+      function handle(e){if(e.type==="touchend")e.preventDefault();pick(newEl,newEl.dataset.val,correct);}
+      newEl.addEventListener("touchend",handle,{passive:false});
+      newEl.addEventListener("click",handle);
+    })(document.getElementById("o"+i));
+  }
+}
+
+function pick(el,chosen,correct){
+  if(answered)return;answered=true;
+  for(var i=0;i<4;i++){
+    var t=document.getElementById("o"+i);
+    if(t.dataset.val===correct)t.classList.add("show");
+  }
+  var fb=document.getElementById("fb");
+  if(chosen===correct){
+    el.classList.add("ok");el.classList.remove("show");
+    C++;totalC++;streak++;
+    var bonus=streak>=3?5:0;lvXP+=15+bonus;totalXP+=15+bonus;
+    fb.textContent=streak>=3?"✓ "+streak+" streak! +"+(15+bonus)+" XP":"✓ Correct!";
+    fb.className="fbok";
+  } else {
+    el.classList.add("bad");W++;totalW++;streak=0;weak.push(cur);
+    fb.textContent="✗ Answer: "+correct;fb.className="fbbad";
+  }
+  showNote(chosen===correct);updateStats();updateBar();
+  document.getElementById("nxt").style.display="block";
+}
+
+function checkAnswer(){
+  if(answered)return;
+  var fi=document.getElementById("fanswer");
+  var raw=fi.value.trim();if(!raw)return;
+  answered=true;fi.disabled=true;document.getElementById("fcheck").disabled=true;
+
+  function norm(s){return s.replace(/[\s,]/g,"").replace(/^\+/,"").replace(/[\u2212\u2013\u2014]/g,"-");}
+  var a=norm(raw),b=norm(String(cur.a));
+  var na=parseFloat(a),nb=parseFloat(b);
+  var ok;
+  if(!isNaN(na)&&!isNaN(nb)&&/^-?\d*\.?\d+$/.test(a)&&/^-?\d*\.?\d+$/.test(b)){
+    ok=Math.abs(na-nb)<1e-9;
+  } else {
+    ok=a.toLowerCase()===b.toLowerCase();
+  }
+
+  var fb=document.getElementById("fb");
+  if(ok){
+    fi.className="ok";C++;totalC++;streak++;lvXP+=20;totalXP+=20;
+    fb.textContent="✓ Correct!";fb.className="fbok";
+  } else {
+    fi.className="bad";W++;totalW++;streak=0;weak.push(cur);
+    fb.textContent="✗ Answer: "+cur.a;fb.className="fbbad";
+  }
+  showNote(ok);updateStats();updateBar();
+  document.getElementById("nxt").style.display="block";
+}
+
+function updateBar(){document.getElementById("lv").textContent="Level "+currentLevel+" / "+MAX_LEVEL;}
+
+function updateStats(){
+  document.getElementById("sc").textContent=C;
+  document.getElementById("sr").textContent=weak.length;
+  document.getElementById("ss").textContent=streak;
+  var tot=C+W;document.getElementById("sa").textContent=tot?Math.round(C/tot*100)+"%":"—";
+}
+
+function updateProg(){
+  var total=C+W+deck.length+weak.length+1;
+  document.getElementById("prog").style.width=Math.round((C+W)/total*100)+"%";
+}
+
+function showLevelSummary(){
+  hideAll();
+  document.getElementById("retry-bar").style.display="none";
+  var info=LEVEL_INFO[currentLevel];
+  var tot=C+W;
+  document.getElementById("ls-emoji").textContent=info.emoji;
+  document.getElementById("ls-tag").textContent="Level "+currentLevel+" Complete!";
+  document.getElementById("ls-title").textContent=info.title;
+  document.getElementById("ls-c").textContent=C;
+  document.getElementById("ls-w").textContent=W;
+  document.getElementById("ls-acc").textContent=tot?Math.round(C/tot*100)+"%":"—";
+  document.getElementById("ls-xp").textContent=lvXP;
+  document.getElementById("ls-unlock").textContent=info.unlock;
+  document.getElementById("ls-next").textContent=currentLevel>=MAX_LEVEL?"See final results 🏆":"Start Level "+(currentLevel+1)+" →";
+  document.getElementById("prog").style.width="100%";
+  document.getElementById("level-summary").style.display="flex";
+}
+
+function showFinalDone(){
+  hideAll();
+  document.getElementById("done").style.display="flex";
+  var tot=totalC+totalW;
+  document.getElementById("dc1").textContent=totalC;
+  document.getElementById("dc2").textContent=totalW;
+  document.getElementById("dc3").textContent=tot?Math.round(totalC/tot*100)+"%":"—";
+  document.getElementById("dc4").textContent=totalXP;
+  document.getElementById("dsub").textContent="All "+MAX_LEVEL+" levels cleared!";
+  document.getElementById("prog").style.width="100%";
+}
+
+/* ── Teacher editor ── */
+var TYPES=["mcq","text"];
+var TYPE_LABELS={mcq:"Multiple choice",text:"Type the answer"};
+var TOPICS=["med","spr","read","match","comp"];
+var TOPIC_LABELS={med:"Quartiles",spr:"Spread",read:"Box plots",match:"Matching",comp:"Comparing"};
+
+function showQuiz(){
+  document.getElementById("quiz-view").style.display="flex";
+  document.getElementById("teacher-view").style.display="none";
+}
+function showTeacher(){
+  document.getElementById("quiz-view").style.display="none";
+  document.getElementById("teacher-view").style.display="flex";
+  renderEditor();
+}
+
+function renderEditor(){
+  var list=document.getElementById("qlist");list.innerHTML="";
+  DATA.forEach(function(d,i){renderCard(d,i,list);});
+}
+
+function renderCard(d,i,list){
+  var wrap=document.createElement("div");wrap.className="qcard";
+  var hdr=document.createElement("div");hdr.className="qcard-header";
+  hdr.innerHTML='<span class="qcard-num">Q'+(i+1)+'</span><span class="qcard-preview">'+esc(d.q)+'</span><span class="qcard-lv">Lv '+d.lv+'</span><button class="qcard-del">Delete</button>';
+  wrap.appendChild(hdr);
+
+  var body=document.createElement("div");body.className="qcard-body";
+
+  var lb=document.createElement("div");lb.innerHTML='<div class="field-label">Level</div>';
+  var lps=document.createElement("div");lps.className="lv-pills";
+  [1,2,3,4,5].forEach(function(n){
+    var p=document.createElement("div");p.className="lv-pill"+(d.lv===n?" active":"");
+    p.textContent="Level "+n;
+    p.addEventListener("click",function(){d.lv=n;lps.querySelectorAll(".lv-pill").forEach(function(x){x.classList.remove("active");});p.classList.add("active");hdr.querySelector(".qcard-lv").textContent="Lv "+n;});
+    lps.appendChild(p);
+  });
+  lb.appendChild(lps);body.appendChild(lb);
+
+  var tb=document.createElement("div");tb.innerHTML='<div class="field-label">Answer format</div>';
+  var tps=document.createElement("div");tps.className="type-pills";
+  TYPES.forEach(function(tp){
+    var p=document.createElement("div");p.className="type-pill"+(d.ty===tp?" active":"");
+    p.textContent=TYPE_LABELS[tp];
+    p.addEventListener("click",function(){d.ty=tp;tps.querySelectorAll(".type-pill").forEach(function(x){x.classList.remove("active");});p.classList.add("active");});
+    tps.appendChild(p);
+  });
+  tb.appendChild(tps);body.appendChild(tb);
+
+  var cb=document.createElement("div");cb.innerHTML='<div class="field-label">Topic badge</div>';
+  var cps=document.createElement("div");cps.className="type-pills";
+  TOPICS.forEach(function(tp){
+    var p=document.createElement("div");p.className="type-pill"+(d.t===tp?" active":"");
+    p.textContent=TOPIC_LABELS[tp];
+    p.addEventListener("click",function(){d.t=tp;cps.querySelectorAll(".type-pill").forEach(function(x){x.classList.remove("active");});p.classList.add("active");});
+    cps.appendChild(p);
+  });
+  cb.appendChild(cps);body.appendChild(cb);
+
+  body.appendChild(makeField("Question",d.q,function(v){d.q=v;hdr.querySelector(".qcard-preview").textContent=v;}));
+  body.appendChild(makeField("Correct answer",d.a,function(v){d.a=v;}));
+
+  if(d.ty!=="text"){
+    var ob=document.createElement("div");ob.innerHTML='<div class="field-label" style="margin-bottom:6px">Wrong options (3)</div>';
+    var og=document.createElement("div");og.className="opts-grid";
+    for(var j=0;j<3;j++){(function(j){
+      var ow=document.createElement("div");ow.className="opt-wrap";
+      var lbl=document.createElement("div");lbl.className="field-label";lbl.textContent="Option "+(j+1);
+      var inp=document.createElement("input");inp.className="field-input";inp.type="text";inp.value=(d.x&&d.x[j])||"";
+      inp.addEventListener("input",function(){if(!d.x)d.x=[];d.x[j]=inp.value;});
+      ow.appendChild(lbl);ow.appendChild(inp);og.appendChild(ow);
+    })(j);}
+    ob.appendChild(og);body.appendChild(ob);
+  }
+
+  body.appendChild(makePlotField(d));
+  body.appendChild(makeTextarea("Short note (shown when correct)",d.note||"",function(v){d.note=v;}));
+  body.appendChild(makeTextarea("Full working (shown when wrong)",d.why||"",function(v){d.why=v;}));
+
+  wrap.appendChild(body);
+  hdr.addEventListener("click",function(e){if(e.target.classList.contains("qcard-del"))return;body.classList.toggle("open");});
+  hdr.querySelector(".qcard-del").addEventListener("click",function(e){
+    e.stopPropagation();
+    if(confirm("Delete this question?")){var idx=DATA.indexOf(d);if(idx>-1)DATA.splice(idx,1);renderEditor();}
+  });
+  list.appendChild(wrap);
+}
+
+function makePlotField(d){
+  var w=document.createElement("div");
+  var l=document.createElement("div");l.className="field-label";
+  l.textContent='Figure (leave blank for none) — e.g. {"k":"box","lo":0,"hi":20,"step":2,"s":[{"min":2,"q1":5,"med":9,"q3":14,"max":20}]}';
+  var ta=document.createElement("textarea");ta.className="field-input plotjson";
+  ta.value=d.p?JSON.stringify(d.p):"";
+  ta.rows=3;
+  var err=document.createElement("div");err.className="plot-err";
+  ta.addEventListener("input",function(){
+    var v=ta.value.trim();
+    if(!v){delete d.p;err.style.display="none";return;}
+    try{d.p=JSON.parse(v);err.style.display="none";}
+    catch(e){err.textContent="Not valid JSON yet — the figure won't update until this is fixed.";err.style.display="block";}
+  });
+  w.appendChild(l);w.appendChild(ta);w.appendChild(err);return w;
+}
+
+function makeField(label,val,onChange){
+  var w=document.createElement("div");
+  var l=document.createElement("div");l.className="field-label";l.textContent=label;
+  var inp=document.createElement("input");inp.className="field-input";inp.type="text";inp.value=val;
+  inp.addEventListener("input",function(){onChange(inp.value);});
+  w.appendChild(l);w.appendChild(inp);return w;
+}
+
+function makeTextarea(label,val,onChange){
+  var w=document.createElement("div");
+  var l=document.createElement("div");l.className="field-label";l.textContent=label;
+  var ta=document.createElement("textarea");ta.className="field-input";ta.value=val;ta.rows=3;
+  ta.addEventListener("input",function(){onChange(ta.value);});
+  w.appendChild(l);w.appendChild(ta);return w;
+}
+
+function esc(s){return(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+
+function wire(id,fn){
+  var el=document.getElementById(id);if(!el)return;
+  el.addEventListener("touchend",function(e){e.preventDefault();fn();},{passive:false});
+  el.addEventListener("click",fn);
+}
+
+wire("nxt",next);
+wire("fcheck",checkAnswer);
+wire("ls-next",function(){currentLevel>=MAX_LEVEL?showFinalDone():startLevel(currentLevel+1);});
+wire("ls-retry",function(){startLevel(currentLevel);});
+wire("d-again",function(){totalC=0;totalW=0;totalXP=0;startLevel(1);});
+wire("teacher-toggle",function(){
+  var tv=document.getElementById("teacher-view");
+  if(tv.style.display==="flex"){showQuiz();}else{showTeacher();}
+});
+wire("tv-save",function(){showQuiz();totalC=0;totalW=0;totalXP=0;startLevel(1);});
+wire("tv-cancel",function(){DATA=DEFAULT_DATA.map(function(d){return clone(d);});showQuiz();});
+wire("add-btn",function(){
+  DATA.push({lv:currentLevel,t:"med",ty:"mcq",q:"New question",a:"Correct answer",x:["Wrong 1","Wrong 2","Wrong 3"],note:"",why:""});
+  renderEditor();
+  var cards=document.querySelectorAll(".qcard-body");
+  if(cards.length)cards[cards.length-1].classList.add("open");
+  document.getElementById("tv-scroll").scrollTop=999999;
+});
+document.getElementById("fanswer").addEventListener("keydown",function(e){if(e.key==="Enter")checkAnswer();});
+
+startLevel(1);
+</script>
+</body>
+</html>
